@@ -58,8 +58,9 @@ while is_running:
             elif event.ui_element == right_input:
                 text_elem = right_text  
                 input_elem = right_input
-            scene.process_command(event.text)
+                
             text_elem.append_html_text("<br>> " + event.text)
+            scene.process_command(event.text)
             input_elem.clear()
 
         manager.process_events(event)

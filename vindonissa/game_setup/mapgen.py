@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 
+from collections import defaultdict
 import math
-from typing import List
+from typing import List, Dict
 from opensimplex import OpenSimplex
-from random import random, randint
+from random import random, randint, sample, choice
 
 from vindonissa.game_objects.cell import Cell
 from vindonissa.game_objects.map import WorldMap
+from vindonissa.game_objects.river import River
 from vindonissa.game_setup.Delaunator import Delaunator
 from vindonissa.game_setup.mapviz import draw_map
 
@@ -125,13 +127,150 @@ def create_cell_coordinates(numEdges, triangles, delaunay, centers):
     return coords
 
 
+def get_cell_neighbors(cells_by_id: Dict[int, Cell], numEdges, triangles, delaunay, centers):
+    """
+    A pretty clunky piece of code that looks up which cells share vertices so we know that
+    they are neighbored. By no means perfect, but it does the job at least.
+    """
+    vertex_to_points = defaultdict(list)
+    
+    seen = set()
+    for e in range(numEdges):
+        r = triangles[nextHalfedge(e)]
+        if r not in seen:
+            seen.add(r)
+            vertices = edgesArountPoint(delaunay, e)
+            if len(vertices) < 3:
+                continue
+            vertices = [(centers[triangleOfEdge(x)]["x"], centers[triangleOfEdge(x)]["y"]) for x in vertices]
+            # point_to_vertices[r] = set(vertices)
+            for vertex in vertices:
+                vertex_to_points[vertex].append(r)
+
+    for vertex, points in vertex_to_points.items():
+        current_cells: List[Cell] = []
+        for point in points:
+            cell = cells_by_id[point]
+            cell.vertices.add(vertex)
+            current_cells.append(cell)
+        for i, a in enumerate(current_cells):
+            for b in current_cells[i+1:]:
+                if a in b.neighbors:
+                    continue
+                if len(a.vertices.intersection(b.vertices)) > 1:
+                    a.neighbors.append(b)
+                    b.neighbors.append(a)
+
+
+def create_river(origin: Cell, 
+                 upstream_tolerace: float = 0.1,
+                 downstream_bonus_tr: float = 0.005) -> River:
+    """
+    I should probably replace this through an a* algorithm
+    """
+
+    river = River(origin)
+    cell: Cell = origin
+    last_direction: int = None
+    continue_river = True
+    while not cell.is_water and not cell.is_border_cell and continue_river:
+
+        # choose neighbor to flow to
+        neighbor_weights = []
+        for neighbor in cell.neighbors:
+            weight = 0
+            if neighbor in river.path:
+                neighbor_weights.append(0)
+                continue
+            elif neighbor.has_river:
+                # allow merging if present river is not the same
+                weight += 5
+                
+                    
+            if neighbor.elevation - upstream_tolerace > cell.elevation:
+                continue
+            elif neighbor.elevation < cell.elevation:
+                bonus = round((cell.elevation - (neighbor.elevation)) / downstream_bonus_tr)
+                weight += 1+bonus
+            else:
+                weight += 1
+
+            # bonus for going as straight as possible
+            if last_direction is not None:
+                new_direction = cell.get_direction(neighbor)
+                angle = abs(last_direction - new_direction)
+
+                weight += round((180 - angle) / 18)
+
+            neighbor_weights.append(weight)
+            
+        try:
+            next_cell = sample(cell.neighbors, 1, counts=neighbor_weights)[0]
+        except ValueError as e:
+            return None
+            #return river if len(river.path) > 1 else None
+
+        if next_cell.has_river:
+            # if we merged rivers, we need to stop generation here
+            continue_river = False
+
+        river.path.append(next_cell)
+        cell = next_cell
+        last_direction = next_cell.get_direction(cell)
+        #last_direction = cell.get_direction(next_cell)
+
+    # only make river connects if river is actually made
+    for cellA, cellB in zip(river.path[:-1], river.path[1:]):
+        cellA.river_connections.append((river, cellB, "out"))
+        cellB.river_connections.append((river, cellA, "in"))
+
+    return river
+
+
+
+def create_rivers(map: WorldMap, river_perc: int) -> List[River]:
+    river_weights: List[int] = []
+    for cell in map.cells:
+        if cell.is_water or cell.is_border_cell:
+            river_weights.append(0)
+        elif cell.elevation_category == 1:
+            river_weights.append(1)
+        elif cell.elevation_category == 2:
+            river_weights.append(2)
+        elif cell.elevation_category == 3:
+            river_weights.append(8)
+        elif cell.elevation_category == 4:
+            river_weights.append(4)
+
+    river_budget = round(len(map.land_cells) * river_perc)
+
+    origins: List[Cell] = sample(map.cells, river_budget, counts=river_weights)
+
+    rivers = []
+
+    for origin in origins:
+        if origin.has_river:
+            continue
+        if river_budget <= 0:
+            break
+        new_river: River = create_river(origin)
+        if new_river is None:
+            # river couldn't be created
+            continue
+        river_budget -= len(new_river)
+        rivers.append(new_river)
+
+    return rivers
+
+
 def create_worldmap(
         width: int = 120, 
         height: int = 80, 
         jitter: float = 0.5, 
         wavelength: float = 1, 
         wavelength_moisture: float = 1,
-        draw_map_: bool = False) -> WorldMap:
+        draw_map_: bool = False,
+        river_perc: int = 0.2) -> WorldMap:
     """
     Create a new map, including elevation, moisture, etc.
     """
@@ -162,11 +301,20 @@ def create_worldmap(
         for tr, t in enumerate(thresholds):
             if e <= t:
                 break
-        cell = Cell(x, y, e, e <= thresholds[0], coords[i], tr)
+        cell = Cell(i, x, y, e, e <= thresholds[0], coords[i], tr)
         map.cells.append(cell)
 
+    # assign neighbors
+    map.setup_cells()
+    get_cell_neighbors(map.cells_by_id, len(delaunay.halfedges), delaunay.triangles, delaunay, centers)
+
+    # create rivers
+    map.rivers = create_rivers(map, river_perc)
+
     if draw_map_:
-        draw_map(width, height, delaunay, centers, elevation, moisture, points, map.cells)
+        draw_map(width, height, delaunay, centers, elevation, moisture, points, map)
+
+    return map
 
 if __name__ == "__main__":
     create_worldmap(draw_map_=True)

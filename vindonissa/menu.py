@@ -17,7 +17,7 @@ def process_command(command):
         # TODO: Print all commands with corresponding use.
         out = f"You're in the menu. Available commands are: {', '.join(menu_commands)}"
     elif command == "new game":
-        session = Session()
+        session = Session(LEFT_TEXT)
         session.setup()
     else:
         out = "Command was not recognized."

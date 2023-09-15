@@ -8,4 +8,6 @@ vindonissa.egg-info/SOURCES.txt
 vindonissa.egg-info/dependency_links.txt
 vindonissa.egg-info/top_level.txt
 vindonissa/game_objects/__init__.py
+vindonissa/game_objects/cell.py
 vindonissa/game_objects/map.py
+vindonissa/game_objects/river.py

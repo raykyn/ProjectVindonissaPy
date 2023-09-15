@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from game_objects.map import WorldMap
-from game_setup import mapgen
+from vindonissa.game_setup import mapgen
 
 class Session(object):
     """
@@ -10,11 +10,16 @@ class Session(object):
     or events that are queued.
     Saving a game session should be as easy as to binarize this object.
     """
-    def __init__(self):
+    def __init__(self, left_text):
         self.map: WorldMap = None
+
+        # show stuff to player
+        self.left_text = left_text
+
 
     def setup(self) -> None:
         """
         Triggered when a new game is created.
         """
         self.map: WorldMap = mapgen.create_worldmap()
+        self.left_text.append_html_text("<br>Finished map generation!")

@@ -2,6 +2,10 @@
 
 import math
 import pygame
+from typing import List
+
+from vindonissa.game_objects.cell import Cell
+from vindonissa.game_objects.map import WorldMap
 
 
 BLACK = (  0,   0,   0)
@@ -107,19 +111,31 @@ def drawCellColors2(screen, gridsize, cells):
         pygame.draw.polygon(screen, heightColorByCategory(cell), [(x * gridsize, y * gridsize) for x, y in cell.coords])
 
 
-def drawPoints(screen, canvas, points, gridsize):
+def drawPoints(canvas, points):
     for point in points:
         x = point[0]
         y = point[1]
         pygame.draw.circle(
             canvas,
             RED,
-            [x*gridsize, y*gridsize],
+            [x*GRIDSIZE, y*GRIDSIZE],
             1
         )
+    
+def drawPoint(canvas, point, gridsize, color=RED):
+    x = point[0]
+    y = point[1]
+    pygame.draw.circle(
+        canvas,
+        color,
+        [x*gridsize, y*gridsize],
+        3
+    )
 
+def drawRiver(canvas, river, color=BLUE):
+    pygame.draw.aalines(canvas, color, False, [(c.x*GRIDSIZE, c.y*GRIDSIZE) for c in river.path])
 
-def draw_map(width, height, delaunay, centers, elevation, moisture, points, cells):
+def draw_map(width, height, delaunay, centers, elevation, moisture, points, map: WorldMap):
     """
     Because Pygame can only show one window at a time,
     the map can currently only be shown as a debug feature. 
@@ -133,9 +149,27 @@ def draw_map(width, height, delaunay, centers, elevation, moisture, points, cell
     clock = pygame.time.Clock()
 
     screen.fill(WHITE)
-    drawCellColors2(screen, GRIDSIZE, cells)
+    drawCellColors2(screen, GRIDSIZE, map.cells)
+    for river in map.rivers:
+        drawRiver(screen, river)
+    #drawPoints(screen, [(p.x, p.y) for p in map.cells if p.is_border_cell])
+    """
+    cell1 = cells[1056]
+    cell2 = cells[8000]
+    cell3 = cells[5000]
+    print((cells[1056].x, cells[1056].y))
+    print((cells[8000].x, cells[8000].y))
+    print((cells[5000].x, cells[5000].y))
+    print(cell1.get_direction(cell2))
+    print(cell2.get_direction(cell1))
+    print(cell2.get_direction(cell3))
+    print(cell3.get_direction(cell1))
+    drawPoint(screen, (cells[1056].x, cells[1056].y), GRIDSIZE, RED)
+    drawPoint(screen, (cells[8000].x, cells[8000].y), GRIDSIZE, BLUE)
+    drawPoint(screen, (cells[5000].x, cells[5000].y), GRIDSIZE, GREEN)
+    """
+    #drawPoints(screen, [(cell.x, cell.y) for cell in cells[1056].neighbors], GRIDSIZE)
     #drawCellColors(screen, GRIDSIZE, delaunay.triangles, len(delaunay.halfedges), centers, delaunay, elevation, moisture)
-    #drawPoints(screen, screen, points, GRIDSIZE)
     pygame.display.flip()
 
     while not done:

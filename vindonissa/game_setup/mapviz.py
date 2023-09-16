@@ -108,6 +108,7 @@ def drawCellColors(screen, gridsize, triangles, numEdges, centers, delaunay, ele
 
 def drawCellColors2(screen, gridsize, cells):
     for cell in cells:
+        #pygame.draw.polygon(screen, heightColorByCell(cell), [(x * gridsize, y * gridsize) for x, y in cell.coords])
         pygame.draw.polygon(screen, heightColorByCategory(cell), [(x * gridsize, y * gridsize) for x, y in cell.coords])
 
 
@@ -133,7 +134,7 @@ def drawPoint(canvas, point, gridsize, color=RED):
     )
 
 def drawRiver(canvas, river, color=BLUE):
-    pygame.draw.aalines(canvas, color, False, [(c.x*GRIDSIZE, c.y*GRIDSIZE) for c in river.path])
+    pygame.draw.lines(canvas, color, False, [(c.x*GRIDSIZE, c.y*GRIDSIZE) for c in river.path])
 
 def draw_map(width, height, delaunay, centers, elevation, moisture, points, map: WorldMap):
     """

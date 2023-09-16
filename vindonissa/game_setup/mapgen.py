@@ -184,14 +184,22 @@ def create_river(origin: Cell,
                 continue
             elif neighbor.has_river:
                 # allow merging if present river is not the same
-                weight += 5
+                weight += 50
                 
-                    
+
+            """       
             if neighbor.elevation - upstream_tolerace > cell.elevation:
                 continue
             elif neighbor.elevation < cell.elevation:
                 bonus = round((cell.elevation - (neighbor.elevation)) / downstream_bonus_tr)
                 weight += 1+bonus
+            else:
+                weight += 1
+            """
+            if cell.elevation_category > neighbor.elevation_category:
+                weight += 100
+            elif cell.elevation_category == neighbor.elevation_category:
+                weight += 50
             else:
                 weight += 1
 
@@ -200,7 +208,8 @@ def create_river(origin: Cell,
                 new_direction = cell.get_direction(neighbor)
                 angle = abs(last_direction - new_direction)
 
-                weight += round((180 - angle) / 18)
+                weight += 0
+                #weight += round((180 - angle) / 180)
 
             neighbor_weights.append(weight)
             

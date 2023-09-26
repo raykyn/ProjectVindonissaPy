@@ -4,7 +4,7 @@ from collections import defaultdict
 import math
 from typing import List, Dict
 from opensimplex import OpenSimplex
-from random import random, randint, sample, choice
+from random import random, randint, sample, choice, seed
 
 from vindonissa.game_objects.cell import Cell
 from vindonissa.game_objects.map import WorldMap
@@ -28,37 +28,80 @@ def calculateCentroids(points, delaunay):
     return centroids
 
 
-def assignElevation(points, numRegions, width, height, wavelength):
+def assignForests(points, numregions, width, height, wavelength, elevation, thresholds):
     noise = OpenSimplex(seed=randint(0, 9999999))
     noise2 = OpenSimplex(seed=randint(0, 9999999))
     noise3 = OpenSimplex(seed=randint(0, 9999999))
 
-    freq1 = 6
+    elevation_average = sum([e for e in elevation if e > thresholds[0]]) / len([e for e in elevation if e > thresholds[0]])
+
+    freq1 = 3
     freq2 = freq1 * 4
     freq3 = freq2 * 4
 
-    elevation = []
-    for r in range(numRegions):
+    treelevel = []
+    for r in range(numregions):
         nx = points[r][0] / width - 0.5
         ny = points[r][1] / height - 0.5
         sample = ((1 * noise.noise2d(freq1 * nx / wavelength, freq1 * ny / wavelength) + 
                     0.5 * noise2.noise2d(freq2 * nx / wavelength, freq2 * ny / wavelength) +
                     0.25 * noise3.noise2d(freq3 * nx / wavelength, freq3 * ny / wavelength)) / 1.75)
         
+        sample = abs(sample)
+
+        sample += elevation_average * 0.3
+        
+        # modify by elevation and waterlevel
+        if elevation[r] <= thresholds[0]:
+            sample = 0  # no trees in water
+        else:
+            sample = sample - (elevation[r] * 0.3)
+        
+        treelevel.append(sample)
+    
+    return treelevel
+
+
+def assignElevation(points, numRegions, width, height, wavelength):
+    noise = OpenSimplex(seed=randint(0, 9999999))
+    noise2 = OpenSimplex(seed=randint(0, 9999999))
+    noise3 = OpenSimplex(seed=randint(0, 9999999))
+
+    freq1 = 6
+    freq2 = freq1 * 2
+    freq3 = freq2 * 2
+
+    elevation = []
+    for r in range(numRegions):
+        nx = points[r][0] / width - 0.5
+        ny = points[r][1] / height - 0.5
+        factors = [1, 1, 0.5]
+        sample = ((factors[0] * noise.noise2d(freq1 * nx / wavelength, freq1 * ny / wavelength) + 
+                    factors[1] * noise2.noise2d(freq2 * nx / wavelength, freq2 * ny / wavelength) +
+                    factors[2] * noise3.noise2d(freq3 * nx / wavelength, freq3 * ny / wavelength)) / sum(factors))
+        
+        # shape from -1 to 1 to 0 to 1
+        sample += 1
+        sample /= 2
+        
+        
         # shaping the landmass
-        tx = max(0.3, points[r][0] / width)
-        ty = max(0.3, points[r][1] / height)
+        tx = max(0.6, points[r][0] / width)
+        ty = max(0.6, points[r][1] / height)
         d = min(1, (tx * tx + ty * ty) / math.sqrt(2))
         sample = (1 + sample - d) / 2
 
+        
         # valley factor
-        sample = pow(sample * 1.6, 2.5).real
+        sample = pow(sample, 2).real
 
+        """
         # shaping the landmass (weaker shaping)
         tx = max(0.3, points[r][0] / width)
         ty = max(0.3, points[r][1] / height)
         d = min(1, (tx * tx + ty * ty) / math.sqrt(2))
         sample = (0.5 + sample - d*0.5) / 2
+        """
         
         elevation.append(sample)
 
@@ -75,10 +118,9 @@ def assignMoisture(points, numRegions, width, height, wavelength):
     return moisture
 
 
-def get_elevation_thresholds(elevation: List[float]) -> float:
+def get_elevation_thresholds(elevation: List[float]) -> List[float]:
     """
-    With this threshold we can for example make exactly a third of the map into water.
-    currently returning: [waterlevel -> 0.3]
+    Let's us set categories for our elevation
     """
     sorted_elevation = sorted(elevation)
     thresholds = [0.3, 0.5, 0.8, 0.95, 1]
@@ -157,6 +199,8 @@ def get_cell_neighbors(cells_by_id: Dict[int, Cell], numEdges, triangles, delaun
             for b in current_cells[i+1:]:
                 if a in b.neighbors:
                     continue
+                if a.is_border_cell and b.is_border_cell:
+                    continue
                 if len(a.vertices.intersection(b.vertices)) > 1:
                     a.neighbors.append(b)
                     b.neighbors.append(a)
@@ -164,28 +208,40 @@ def get_cell_neighbors(cells_by_id: Dict[int, Cell], numEdges, triangles, delaun
 
 def create_river(origin: Cell, 
                  upstream_tolerace: float = 0.1,
-                 downstream_bonus_tr: float = 0.005) -> River:
+                 downstream_bonus_tr: float = 0.005) -> River|None:
     """
     I should probably replace this through an a* algorithm
     """
 
     river = River(origin)
     cell: Cell = origin
-    last_direction: int = None
+    last_direction: float|None = None
     continue_river = True
     while not cell.is_water and not cell.is_border_cell and continue_river:
 
         # choose neighbor to flow to
         neighbor_weights = []
+        secondary_weights = []
         for neighbor in cell.neighbors:
             weight = 0
+            sec_weight = 0
             if neighbor in river.path:
                 neighbor_weights.append(0)
+                secondary_weights.append(0)
                 continue
             elif neighbor.has_river:
                 # allow merging if present river is not the same
                 weight += 50
-                
+            
+            has_neighbor_with_self_river = False
+            for n in neighbor.neighbors:
+                if n != cell and n in river.path:
+                    has_neighbor_with_self_river = True
+                    break
+            if has_neighbor_with_self_river:
+                neighbor_weights.append(0)
+                secondary_weights.append(0)
+                continue
 
             """       
             if neighbor.elevation - upstream_tolerace > cell.elevation:
@@ -201,22 +257,32 @@ def create_river(origin: Cell,
             elif cell.elevation_category == neighbor.elevation_category:
                 weight += 50
             else:
-                weight += 1
+                weight += 0
+
+                diff = (neighbor.elevation - cell.elevation) * 100
+                sec_weight += max(10 - diff, 0)
 
             # bonus for going as straight as possible
             if last_direction is not None:
                 new_direction = cell.get_direction(neighbor)
                 angle = abs(last_direction - new_direction)
 
-                weight += 0
-                #weight += round((180 - angle) / 180)
+                #weight += 0
+                if weight > 0:
+                    weight += round((180 - angle) / 90)
+                else:
+                    sec_weight += round((180 - angle) / 90)
 
             neighbor_weights.append(weight)
+            secondary_weights.append(sec_weight)
             
         try:
             next_cell = sample(cell.neighbors, 1, counts=neighbor_weights)[0]
         except ValueError as e:
-            return None
+            try:
+                next_cell = sample(cell.neighbors, 1, counts=secondary_weights)[0]
+            except:
+                return None
             #return river if len(river.path) > 1 else None
 
         if next_cell.has_river:
@@ -237,7 +303,7 @@ def create_river(origin: Cell,
 
 
 
-def create_rivers(map: WorldMap, river_perc: int) -> List[River]:
+def create_rivers(map: WorldMap, river_perc: float) -> List[River]:
     river_weights: List[int] = []
     for cell in map.cells:
         if cell.is_water or cell.is_border_cell:
@@ -262,7 +328,7 @@ def create_rivers(map: WorldMap, river_perc: int) -> List[River]:
             continue
         if river_budget <= 0:
             break
-        new_river: River = create_river(origin)
+        new_river: River|None = create_river(origin)
         if new_river is None:
             # river couldn't be created
             continue
@@ -279,7 +345,7 @@ def create_worldmap(
         wavelength: float = 1, 
         wavelength_moisture: float = 1,
         draw_map_: bool = False,
-        river_perc: int = 0.2) -> WorldMap:
+        river_perc: float = 0.2) -> WorldMap:
     """
     Create a new map, including elevation, moisture, etc.
     """
@@ -300,31 +366,35 @@ def create_worldmap(
 
     thresholds = get_elevation_thresholds(elevation)
 
+    treelevel = assignForests(points, len(points), width, height, wavelength, elevation, thresholds)
+
     coords = create_cell_coordinates(len(delaunay.halfedges), delaunay.triangles, delaunay, centers)
     #print(len(coords), len(points), len(elevation))
 
     # Make each point a Cell object
-    for (x, y), e, i in zip(points, elevation, range(len(points))):
+    for (x, y), e, tree, i in zip(points, elevation, treelevel, range(len(points))):
         if i not in coords:
             continue
         for tr, t in enumerate(thresholds):
             if e <= t:
                 break
-        cell = Cell(i, x, y, e, e <= thresholds[0], coords[i], tr)
+        cell = Cell(i, x, y, e, e <= thresholds[0], coords[i], tr, tree)
         map.cells.append(cell)
 
     # assign neighbors
     map.setup_cells()
     get_cell_neighbors(map.cells_by_id, len(delaunay.halfedges), delaunay.triangles, delaunay, centers)
+    map.setup_cells2()
 
     # create rivers
     map.rivers = create_rivers(map, river_perc)
 
     if draw_map_:
-        draw_map(width, height, delaunay, centers, elevation, moisture, points, map)
+        draw_map(map)
 
     return map
 
 if __name__ == "__main__":
+    seed(42)
     create_worldmap(draw_map_=True)
     

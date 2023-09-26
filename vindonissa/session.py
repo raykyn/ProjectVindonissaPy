@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from game_objects.map import WorldMap
-from vindonissa.game_setup import mapgen
+from vindonissa.game_setup import mapgen, citygen
 
 class Session(object):
     """
@@ -22,4 +22,6 @@ class Session(object):
         Triggered when a new game is created.
         """
         self.map: WorldMap = mapgen.create_worldmap()
-        self.left_text.append_html_text("<br>Finished map generation!")
+        self.left_text.append_html_text("<br>Finished terrain generation!")
+        citygen.generate(self.map)
+        self.left_text.append_html_text("<br>Finished city generation!")

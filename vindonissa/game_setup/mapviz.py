@@ -18,6 +18,8 @@ LAND = (132, 191, 148)
 LAND2 = (128, 153, 102)
 LAND3 = (101, 117, 105)
 GREY = (122, 130, 124)
+YELLOW = (255, 255, 0)
+ROAD = (175, 150, 125)
 
 GRIDSIZE = 10
 
@@ -130,18 +132,89 @@ def drawPoint(canvas, point, gridsize, color=RED):
         canvas,
         color,
         [x*gridsize, y*gridsize],
-        3
+        5
     )
+
+def drawTrees(canvas, cells):
+    for cell in cells:
+        pygame.draw.circle(
+            canvas,
+            (0, 125, 0),
+            [cell.x*GRIDSIZE, cell.y*GRIDSIZE],
+            cell.trees * 5
+        )
+
 
 def drawRiver(canvas, river, color=BLUE):
     pygame.draw.lines(canvas, color, False, [(c.x*GRIDSIZE, c.y*GRIDSIZE) for c in river.path])
 
-def draw_map(width, height, delaunay, centers, elevation, moisture, points, map: WorldMap):
+
+def drawCities(canvas, cells: List[Cell]):
+    for cell in cells:
+        if cell.city_center is not None:
+            pygame.draw.circle(
+                canvas,
+                BLACK,
+                [cell.x*GRIDSIZE, cell.y*GRIDSIZE],
+                max(round(cell.route_counter * 0.5), 1)
+            )
+
+def drawPath(canvas, path, color):
+    for cell in path:
+        pygame.draw.circle(
+            canvas,
+            color,
+            [cell.x*GRIDSIZE, cell.y*GRIDSIZE],
+            3
+        )
+
+
+def test_pathfinding_cost(source: Cell, target: Cell):
+    if target in [c for r, c, m in source.river_connections if m == "out"]:
+        return 10
+    
+    # entering and leaving water costs a bit more
+    if (source.is_water and not target.is_water) or (not source.is_water and target.is_water):
+        return 40
+    
+    # but moving along coasts is fast
+    if target.is_water and not target.is_deep_water:
+        return 10
+    
+    # and moving in deep water is a bit slower
+    if target.is_water and target.is_deep_water:
+        return 20
+
+    if target.elevation_category == 4:
+        return 1000
+    elif target.elevation_category == 3:
+        return 100
+    elif target.elevation_category == 2:
+        return 30
+    elif target.elevation_category == 1:
+        return 20
+    elif target.elevation_category == 0:
+        return 10
+    
+
+def drawValues(canvas, cells, func, color):
+    for cell in cells:
+        pygame.draw.circle(
+            canvas,
+            color,
+            [cell.x*GRIDSIZE, cell.y*GRIDSIZE],
+            round(func(cell) * 0.2)
+        )
+
+def draw_map(map: WorldMap):
     """
     Because Pygame can only show one window at a time,
     the map can currently only be shown as a debug feature. 
     Later on, it would be nice to show a proper, larger map, maybe even as an html file.
     """
+    width = map.width
+    height = map.height
+
     size = [width*GRIDSIZE, height*GRIDSIZE]
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption("Python MapGenerator")
@@ -151,8 +224,23 @@ def draw_map(width, height, delaunay, centers, elevation, moisture, points, map:
 
     screen.fill(WHITE)
     drawCellColors2(screen, GRIDSIZE, map.cells)
+    drawTrees(screen, map.cells)
+    for road in map.roads:
+        pygame.draw.lines(screen, ROAD, False, [(cell.x*GRIDSIZE, cell.y*GRIDSIZE) for cell in road])
+    for road in map.sea_roads:
+        pygame.draw.lines(screen, BLACK, False, [(cell.x*GRIDSIZE, cell.y*GRIDSIZE) for cell in road])
     for river in map.rivers:
         drawRiver(screen, river)
+    drawCities(screen, map.cells)
+    drawPath(screen, [p.cell for c in map.cities for p in c.ports], YELLOW)
+    #drawPoint(screen, (map.cells[1056].x, map.cells[1056].y), GRIDSIZE, RED)
+    #drawPoint(screen, (map.cells[8000].x, map.cells[8000].y), GRIDSIZE, BLUE)
+    #drawPoint(screen, (map.cells[9500].x, map.cells[9500].y), GRIDSIZE, GREEN)
+    #drawPath(screen, map.cell_to_cell_path(map.cells[1056], map.cells[7000], test_pathfinding_cost), RED)
+    #drawPath(screen, map.cell_to_cell_path(map.cells[7000], map.cells[1056], test_pathfinding_cost), YELLOW)
+    #drawPath(screen, [c for c in map.cells if c.is_border_cell_south], YELLOW)
+    #drawValues(screen, map.cells, lambda x: x.route_counter, YELLOW)
+
     #drawPoints(screen, [(p.x, p.y) for p in map.cells if p.is_border_cell])
     """
     cell1 = cells[1056]

@@ -1,0 +1,1076 @@
+pygame-ce 2.3.2 (SDL 2.26.5, Python 3.10.13)
+0
+dequeue Cell 1057
+Enqueue Cell 1137 114 1 113
+114
+Enqueue Cell 1058 115 1 114
+115
+Enqueue Cell 1136 114 1 113
+114
+Enqueue Cell 977 116 1 115
+116
+Enqueue Cell 1056 115 1 114
+115
+dequeue Cell 1136
+Enqueue Cell 1217 114 2 112
+114
+Enqueue Cell 1216 115 2 113
+115
+Enqueue Cell 1135 116 2 114
+116
+dequeue Cell 1217
+Enqueue Cell 1298 114 3 111
+114
+Enqueue Cell 1297 114 3 111
+114
+Enqueue Cell 1218 115 3 112
+115
+Enqueue Cell 1296 114 3 111
+114
+Enqueue Cell 1138 115 3 112
+115
+dequeue Cell 1296
+Enqueue Cell 1376 114 4 110
+114
+Enqueue Cell 1295 116 4 112
+116
+Enqueue Cell 1215 117 4 113
+117
+dequeue Cell 1376
+Enqueue Cell 1457 114 5 109
+114
+Enqueue Cell 1456 115 5 110
+115
+Enqueue Cell 1455 115 5 110
+115
+Enqueue Cell 1377 115 5 110
+115
+Enqueue Cell 1375 116 5 111
+116
+dequeue Cell 1457
+Enqueue Cell 1537 115 6 109
+115
+Enqueue Cell 1458 115 6 109
+115
+Enqueue Cell 1536 115 6 109
+115
+dequeue Cell 1297
+Change Cell 1377 115 4 110
+curr Cell 1536
+next Cell 1458
+iter Cell 1537
+iter Cell 1377
+114
+dequeue Cell 1377
+Change Cell 1458 115 5 109
+curr Cell 1536
+next Cell 1458
+114
+Enqueue Cell 1378 115 5 110
+115
+dequeue Cell 1458
+Enqueue Cell 1538 114 6 108
+114
+Enqueue Cell 1459 115 6 109
+115
+dequeue Cell 1538
+Enqueue Cell 1619 113 7 106
+113
+Enqueue Cell 1618 114 7 107
+114
+Enqueue Cell 1617 115 7 108
+115
+Enqueue Cell 1539 115 7 108
+115
+dequeue Cell 1619
+Enqueue Cell 1700 114 8 106
+114
+Enqueue Cell 1699 114 8 106
+114
+Enqueue Cell 1620 114 8 106
+114
+Enqueue Cell 1540 115 8 107
+115
+dequeue Cell 1620
+Enqueue Cell 1701 114 9 105
+114
+Enqueue Cell 1621 115 9 106
+115
+dequeue Cell 1701
+Enqueue Cell 1782 114 10 104
+114
+Enqueue Cell 1781 114 10 104
+114
+Enqueue Cell 1702 114 10 104
+114
+Enqueue Cell 1780 114 10 104
+114
+dequeue Cell 1780
+Enqueue Cell 1860 115 11 104
+115
+Enqueue Cell 1779 116 11 105
+116
+dequeue Cell 1702
+Enqueue Cell 1783 114 11 103
+114
+Enqueue Cell 1703 115 11 104
+115
+Enqueue Cell 1623 116 11 105
+116
+Enqueue Cell 1622 117 11 106
+117
+dequeue Cell 1783
+Enqueue Cell 1863 114 12 102
+114
+Enqueue Cell 1784 115 12 103
+115
+dequeue Cell 1863
+Enqueue Cell 1944 1112 1011 101
+1112
+Enqueue Cell 1943 115 13 102
+115
+Enqueue Cell 1864 115 13 102
+115
+Enqueue Cell 1862 116 13 103
+116
+dequeue Cell 1781
+Enqueue Cell 1861 114 11 103
+114
+dequeue Cell 1861
+Enqueue Cell 1942 114 12 102
+114
+Enqueue Cell 1941 114 12 102
+114
+Change Cell 1862 116 12 103
+curr Cell 1862
+next Cell 1623
+115
+Enqueue Cell 1940 114 12 102
+114
+dequeue Cell 1940
+Enqueue Cell 2020 115 13 102
+115
+Enqueue Cell 1939 116 13 103
+116
+Enqueue Cell 1859 117 13 104
+117
+dequeue Cell 1941
+Enqueue Cell 2021 114 13 101
+114
+dequeue Cell 2021
+Enqueue Cell 2101 114 14 100
+114
+Enqueue Cell 2022 115 14 101
+115
+dequeue Cell 2101
+Enqueue Cell 2181 114 15 99
+114
+Enqueue Cell 2102 115 15 100
+115
+Enqueue Cell 2100 115 15 100
+115
+dequeue Cell 2181
+Enqueue Cell 2261 1113 1014 99
+1113
+Enqueue Cell 2262 1112 1014 98
+1112
+Enqueue Cell 2182 115 16 99
+115
+Enqueue Cell 2180 116 16 100
+116
+dequeue Cell 1942
+Change Cell 2022 115 13 101
+curr Cell 2182
+next Cell 2100
+iter Cell 2102
+iter Cell 2022
+114
+dequeue Cell 2022
+Enqueue Cell 2103 1112 1012 100
+1112
+Change Cell 2102 115 14 100
+curr Cell 2182
+next Cell 2100
+iter Cell 2102
+114
+Enqueue Cell 2023 114 14 100
+114
+dequeue Cell 2023
+Enqueue Cell 2024 1113 1013 100
+1113
+Enqueue Cell 1945 116 15 101
+116
+dequeue Cell 2102
+Change Cell 2182 115 15 99
+curr Cell 2182
+next Cell 2100
+114
+dequeue Cell 2182
+Enqueue Cell 2263 114 16 98
+114
+Enqueue Cell 2183 115 16 99
+115
+dequeue Cell 2263
+Enqueue Cell 2343 114 17 97
+114
+Enqueue Cell 2264 114 17 97
+114
+Enqueue Cell 2342 1112 1015 97
+1112
+Enqueue Cell 2184 115 17 98
+115
+dequeue Cell 2264
+Enqueue Cell 2345 114 18 96
+114
+Enqueue Cell 2344 114 18 96
+114
+Enqueue Cell 2265 115 18 97
+115
+Enqueue Cell 2185 116 18 98
+116
+dequeue Cell 2344
+Enqueue Cell 2425 114 19 95
+114
+Enqueue Cell 2424 115 19 96
+115
+dequeue Cell 2425
+Enqueue Cell 2505 114 20 94
+114
+Enqueue Cell 2504 114 20 94
+114
+Enqueue Cell 2506 114 20 94
+114
+Enqueue Cell 2426 115 20 95
+115
+dequeue Cell 2506
+Enqueue Cell 2507 114 21 93
+114
+Enqueue Cell 2427 115 21 94
+115
+dequeue Cell 2507
+Enqueue Cell 2587 115 22 93
+115
+Enqueue Cell 2508 115 22 93
+115
+Enqueue Cell 2586 115 22 93
+115
+dequeue Cell 2504
+Enqueue Cell 2585 114 21 93
+114
+Enqueue Cell 2584 114 21 93
+114
+Enqueue Cell 2583 115 21 94
+115
+Enqueue Cell 2503 116 21 95
+116
+Enqueue Cell 2423 117 21 96
+117
+dequeue Cell 2584
+Enqueue Cell 2665 114 22 92
+114
+Enqueue Cell 2664 115 22 93
+115
+Enqueue Cell 2663 115 22 93
+115
+dequeue Cell 2665
+Enqueue Cell 2745 115 23 92
+115
+Enqueue Cell 2666 115 23 92
+115
+dequeue Cell 2585
+Change Cell 2666 115 22 92
+curr Cell 2666
+next Cell 2745
+114
+dequeue Cell 2666
+Enqueue Cell 2747 114 23 91
+114
+Enqueue Cell 2746 114 23 91
+114
+Enqueue Cell 2667 115 23 92
+115
+dequeue Cell 2746
+Enqueue Cell 2826 114 24 90
+114
+Enqueue Cell 2825 114 24 90
+114
+dequeue Cell 2825
+Enqueue Cell 2906 114 25 89
+114
+Enqueue Cell 2905 1112 1023 89
+1112
+Enqueue Cell 2904 1113 1023 90
+1113
+Enqueue Cell 2824 1114 1023 91
+1114
+Enqueue Cell 2744 117 25 92
+117
+dequeue Cell 2906
+Enqueue Cell 2986 114 26 88
+114
+Enqueue Cell 2907 115 26 89
+115
+dequeue Cell 2986
+Enqueue Cell 3066 114 27 87
+114
+Enqueue Cell 2987 115 27 88
+115
+Enqueue Cell 2985 1114 1025 89
+1114
+dequeue Cell 3066
+Enqueue Cell 3147 114 28 86
+114
+Enqueue Cell 3146 114 28 86
+114
+Enqueue Cell 3067 115 28 87
+115
+Enqueue Cell 3065 116 28 88
+116
+dequeue Cell 3146
+Enqueue Cell 3227 114 29 85
+114
+Enqueue Cell 3226 115 29 86
+115
+Enqueue Cell 3145 116 29 87
+116
+dequeue Cell 3227
+Enqueue Cell 3308 114 30 84
+114
+Enqueue Cell 3307 114 30 84
+114
+Enqueue Cell 3306 115 30 85
+115
+Enqueue Cell 3228 115 30 85
+115
+dequeue Cell 3307
+Enqueue Cell 3388 114 31 83
+114
+Enqueue Cell 3387 114 31 83
+114
+dequeue Cell 3387
+Enqueue Cell 3467 115 32 83
+115
+Enqueue Cell 3466 115 32 83
+115
+Enqueue Cell 3386 116 32 84
+116
+dequeue Cell 3388
+Enqueue Cell 3469 114 32 82
+114
+Enqueue Cell 3468 114 32 82
+114
+Enqueue Cell 3389 114 32 82
+114
+Enqueue Cell 3309 115 32 83
+115
+dequeue Cell 3389
+Enqueue Cell 3390 115 33 82
+115
+Enqueue Cell 3310 116 33 83
+116
+dequeue Cell 3468
+Enqueue Cell 3548 114 33 81
+114
+Enqueue Cell 3547 115 33 82
+115
+dequeue Cell 3548
+Enqueue Cell 3628 114 34 80
+114
+Enqueue Cell 3627 114 34 80
+114
+Enqueue Cell 3549 115 34 81
+115
+dequeue Cell 3627
+Enqueue Cell 3708 114 35 79
+114
+Enqueue Cell 3707 115 35 80
+115
+Enqueue Cell 3626 116 35 81
+116
+dequeue Cell 3708
+Enqueue Cell 3788 114 36 78
+114
+Enqueue Cell 3709 115 36 79
+115
+Enqueue Cell 3787 115 36 79
+115
+dequeue Cell 3788
+Enqueue Cell 3869 114 37 77
+114
+Enqueue Cell 3789 115 37 78
+115
+Enqueue Cell 3868 114 37 77
+114
+dequeue Cell 3868
+Enqueue Cell 3948 115 38 77
+115
+Enqueue Cell 3867 116 38 78
+116
+dequeue Cell 3869
+Enqueue Cell 3949 114 38 76
+114
+Enqueue Cell 3870 115 38 77
+115
+dequeue Cell 3949
+Enqueue Cell 4030 114 39 75
+114
+Enqueue Cell 3950 114 39 75
+114
+Enqueue Cell 4029 114 39 75
+114
+dequeue Cell 4029
+Enqueue Cell 4109 114 40 74
+114
+Enqueue Cell 4108 115 40 75
+115
+Enqueue Cell 4028 116 40 76
+116
+dequeue Cell 4109
+Enqueue Cell 4190 114 41 73
+114
+Enqueue Cell 4189 114 41 73
+114
+Enqueue Cell 4110 115 41 74
+115
+Enqueue Cell 4188 115 41 74
+115
+dequeue Cell 4189
+Enqueue Cell 4270 114 42 72
+114
+Enqueue Cell 4269 114 42 72
+114
+Enqueue Cell 4268 115 42 73
+115
+dequeue Cell 4269
+Enqueue Cell 4350 114 43 71
+114
+Enqueue Cell 4349 115 43 72
+115
+dequeue Cell 4350
+Enqueue Cell 4430 114 44 70
+114
+Enqueue Cell 4351 115 44 71
+115
+Enqueue Cell 4429 115 44 71
+115
+dequeue Cell 4430
+Enqueue Cell 4511 114 45 69
+114
+Enqueue Cell 4431 115 45 70
+115
+Enqueue Cell 4510 114 45 69
+114
+dequeue Cell 4510
+Enqueue Cell 4590 114 46 68
+114
+Enqueue Cell 4589 115 46 69
+115
+Enqueue Cell 4509 116 46 70
+116
+dequeue Cell 4590
+Enqueue Cell 4591 115 47 68
+115
+Enqueue Cell 4671 115 47 68
+115
+Enqueue Cell 4670 115 47 68
+115
+Enqueue Cell 4669 115 47 68
+115
+dequeue Cell 4511
+Enqueue Cell 4512 114 46 68
+114
+Enqueue Cell 4432 115 46 69
+115
+Enqueue Cell 4592 114 46 68
+114
+Change Cell 4591 115 46 68
+curr Cell 4432
+next Cell 4669
+iter Cell 4670
+iter Cell 4671
+iter Cell 4591
+114
+dequeue Cell 4591
+Enqueue Cell 4672 114 47 67
+114
+dequeue Cell 4672
+Enqueue Cell 4673 114 48 66
+114
+Enqueue Cell 4593 115 48 67
+115
+Enqueue Cell 4752 114 48 66
+114
+Enqueue Cell 4751 114 48 66
+114
+dequeue Cell 4751
+Enqueue Cell 4831 114 49 65
+114
+Enqueue Cell 4750 116 49 67
+116
+dequeue Cell 4831
+Enqueue Cell 4832 115 50 65
+115
+Enqueue Cell 4911 115 50 65
+115
+Enqueue Cell 4830 116 50 66
+116
+dequeue Cell 4752
+Enqueue Cell 4753 114 49 65
+114
+Enqueue Cell 4833 113 49 64
+113
+Change Cell 4832 115 49 65
+curr Cell 4911
+next Cell 4832
+114
+dequeue Cell 4833
+Enqueue Cell 4834 114 50 64
+114
+Enqueue Cell 4913 114 50 64
+114
+Enqueue Cell 4754 115 50 65
+115
+Enqueue Cell 4912 114 50 64
+114
+dequeue Cell 4912
+Enqueue Cell 4992 114 51 63
+114
+Enqueue Cell 4991 115 51 64
+115
+dequeue Cell 4992
+Enqueue Cell 4993 115 52 63
+115
+Enqueue Cell 5073 114 52 62
+114
+Enqueue Cell 5072 114 52 62
+114
+Enqueue Cell 5071 115 52 63
+115
+dequeue Cell 5072
+Enqueue Cell 5153 114 53 61
+114
+Enqueue Cell 5152 114 53 61
+114
+Enqueue Cell 5151 115 53 62
+115
+dequeue Cell 5152
+Enqueue Cell 5233 114 54 60
+114
+Enqueue Cell 5232 114 54 60
+114
+Enqueue Cell 5231 115 54 61
+115
+dequeue Cell 5232
+Enqueue Cell 5313 114 55 59
+114
+Enqueue Cell 5312 115 55 60
+115
+Enqueue Cell 5311 115 55 60
+115
+dequeue Cell 5313
+Enqueue Cell 5234 115 56 59
+115
+Enqueue Cell 5314 115 56 59
+115
+Enqueue Cell 5394 114 56 58
+114
+Enqueue Cell 5393 115 56 59
+115
+dequeue Cell 5394
+Enqueue Cell 5395 115 57 58
+115
+Enqueue Cell 5474 114 57 57
+114
+Enqueue Cell 5473 114 57 57
+114
+dequeue Cell 5473
+Enqueue Cell 5392 117 58 59
+117
+Enqueue Cell 5472 116 58 58
+116
+Enqueue Cell 5552 115 58 57
+115
+Enqueue Cell 5554 114 58 56
+114
+Enqueue Cell 5553 114 58 56
+114
+dequeue Cell 5553
+Enqueue Cell 5633 115 59 56
+115
+Enqueue Cell 5632 115 59 56
+115
+dequeue Cell 5554
+Enqueue Cell 5555 115 59 56
+115
+Enqueue Cell 5635 114 59 55
+114
+Enqueue Cell 5634 114 59 55
+114
+dequeue Cell 5634
+Enqueue Cell 5714 114 60 54
+114
+Enqueue Cell 5713 115 60 55
+115
+dequeue Cell 5714
+Enqueue Cell 5715 115 61 54
+115
+Enqueue Cell 5794 115 61 54
+115
+dequeue Cell 5635
+Enqueue Cell 5556 115 60 55
+115
+Enqueue Cell 5636 114 60 54
+114
+Change Cell 5715 115 60 54
+curr Cell 5556
+next Cell 5794
+iter Cell 5715
+114
+dequeue Cell 5715
+Enqueue Cell 5716 114 61 53
+114
+Enqueue Cell 5795 114 61 53
+114
+dequeue Cell 5795
+Enqueue Cell 5874 115 62 53
+115
+Enqueue Cell 5875 114 62 52
+114
+Enqueue Cell 5796 114 62 52
+114
+Enqueue Cell 5876 114 62 52
+114
+dequeue Cell 5876
+Enqueue Cell 5877 114 63 51
+114
+Enqueue Cell 5956 114 63 51
+114
+dequeue Cell 5956
+Enqueue Cell 5957 114 64 50
+114
+Enqueue Cell 5955 115 64 51
+115
+Enqueue Cell 6036 114 64 50
+114
+dequeue Cell 6036
+Enqueue Cell 6035 115 65 50
+115
+Enqueue Cell 6037 114 65 49
+114
+Enqueue Cell 6116 114 65 49
+114
+dequeue Cell 6116
+Enqueue Cell 6117 114 66 48
+114
+Enqueue Cell 6115 115 66 49
+115
+Enqueue Cell 6196 114 66 48
+114
+dequeue Cell 6196
+Enqueue Cell 6195 116 67 49
+116
+Enqueue Cell 6275 115 67 48
+115
+Enqueue Cell 6197 115 67 48
+115
+Enqueue Cell 6277 114 67 47
+114
+dequeue Cell 6277
+Enqueue Cell 6198 115 68 47
+115
+Enqueue Cell 6276 115 68 47
+115
+Enqueue Cell 6278 114 68 46
+114
+Enqueue Cell 6357 114 68 46
+114
+dequeue Cell 6357
+Enqueue Cell 6356 116 69 47
+116
+Enqueue Cell 6436 115 69 46
+115
+Enqueue Cell 6358 114 69 45
+114
+Enqueue Cell 6437 114 69 45
+114
+dequeue Cell 6437
+Enqueue Cell 6516 115 70 45
+115
+Enqueue Cell 6438 114 70 44
+114
+Enqueue Cell 6517 114 70 44
+114
+dequeue Cell 6517
+Enqueue Cell 6596 115 71 44
+115
+Enqueue Cell 6597 114 71 43
+114
+Enqueue Cell 6518 115 71 44
+115
+Enqueue Cell 6598 114 71 43
+114
+dequeue Cell 6598
+Enqueue Cell 6519 115 72 43
+115
+Enqueue Cell 6599 114 72 42
+114
+Enqueue Cell 6678 115 72 43
+115
+dequeue Cell 6599
+Enqueue Cell 6600 115 73 42
+115
+Enqueue Cell 6680 114 73 41
+114
+Enqueue Cell 6679 114 73 41
+114
+dequeue Cell 6679
+Enqueue Cell 6758 115 74 41
+115
+Enqueue Cell 6759 115 74 41
+115
+dequeue Cell 6680
+Enqueue Cell 6601 116 74 42
+116
+Enqueue Cell 6681 114 74 40
+114
+Enqueue Cell 6760 114 74 40
+114
+dequeue Cell 6760
+Enqueue Cell 6840 115 75 40
+115
+Enqueue Cell 6761 114 75 39
+114
+Enqueue Cell 6841 114 75 39
+114
+dequeue Cell 6841
+Enqueue Cell 6762 115 76 39
+115
+Enqueue Cell 6921 114 76 38
+114
+Enqueue Cell 6842 114 76 38
+114
+Enqueue Cell 6922 114 76 38
+114
+dequeue Cell 6922
+Enqueue Cell 6923 114 77 37
+114
+Enqueue Cell 7002 113 77 36
+113
+Enqueue Cell 7003 113 77 36
+113
+dequeue Cell 7003
+Enqueue Cell 6924 115 78 37
+115
+Enqueue Cell 7082 114 78 36
+114
+Enqueue Cell 7004 113 78 35
+113
+Enqueue Cell 7083 113 78 35
+113
+dequeue Cell 7083
+Enqueue Cell 7162 114 79 35
+114
+Enqueue Cell 7163 113 79 34
+113
+Enqueue Cell 7084 113 79 34
+113
+Enqueue Cell 7164 113 79 34
+113
+dequeue Cell 7164
+Enqueue Cell 7165 113 80 33
+113
+Enqueue Cell 7243 114 80 34
+114
+Enqueue Cell 7244 113 80 33
+113
+dequeue Cell 7244
+Enqueue Cell 7323 114 81 33
+114
+Enqueue Cell 7245 113 81 32
+113
+Enqueue Cell 7324 113 81 32
+113
+dequeue Cell 7324
+Enqueue Cell 7403 114 82 32
+114
+Enqueue Cell 7325 114 82 32
+114
+Enqueue Cell 7404 113 82 31
+113
+dequeue Cell 7404
+Enqueue Cell 7483 114 83 31
+114
+Enqueue Cell 7484 114 83 31
+114
+Enqueue Cell 7405 114 83 31
+114
+Enqueue Cell 7485 113 83 30
+113
+dequeue Cell 7485
+Enqueue Cell 7564 113 84 29
+113
+Enqueue Cell 7565 113 84 29
+113
+Enqueue Cell 7486 113 84 29
+113
+Enqueue Cell 7566 113 84 29
+113
+dequeue Cell 7566
+Enqueue Cell 7645 114 85 29
+114
+Enqueue Cell 7567 113 85 28
+113
+Enqueue Cell 7646 113 85 28
+113
+dequeue Cell 7646
+Enqueue Cell 7647 113 86 27
+113
+Enqueue Cell 7726 113 86 27
+113
+dequeue Cell 7726
+Enqueue Cell 7725 114 87 27
+114
+Enqueue Cell 7727 113 87 26
+113
+Enqueue Cell 7806 113 87 26
+113
+dequeue Cell 7806
+Enqueue Cell 7805 114 88 26
+114
+Enqueue Cell 7807 113 88 25
+113
+Enqueue Cell 7886 113 88 25
+113
+dequeue Cell 7886
+Enqueue Cell 7885 115 89 26
+115
+Enqueue Cell 7966 114 89 25
+114
+Enqueue Cell 7887 114 89 25
+114
+Enqueue Cell 7967 113 89 24
+113
+dequeue Cell 7967
+Enqueue Cell 7888 114 90 24
+114
+Enqueue Cell 8047 113 90 23
+113
+Enqueue Cell 7968 113 90 23
+113
+Enqueue Cell 8048 112 90 22
+112
+dequeue Cell 8048
+Enqueue Cell 8127 113 91 22
+113
+Enqueue Cell 8049 113 91 22
+113
+Enqueue Cell 8128 113 91 22
+113
+dequeue Cell 8128
+Enqueue Cell 8207 113 92 21
+113
+Enqueue Cell 8208 113 92 21
+113
+Enqueue Cell 8129 113 92 21
+113
+Enqueue Cell 8209 112 92 20
+112
+dequeue Cell 8209
+Enqueue Cell 8210 112 93 19
+112
+Enqueue Cell 8289 113 93 20
+113
+dequeue Cell 8210
+Enqueue Cell 8130 115 94 21
+115
+Enqueue Cell 8290 113 94 19
+113
+Enqueue Cell 8211 113 94 19
+113
+Enqueue Cell 8291 112 94 18
+112
+dequeue Cell 8291
+Enqueue Cell 8370 113 95 18
+113
+Enqueue Cell 8292 113 95 18
+113
+Enqueue Cell 8371 113 95 18
+113
+dequeue Cell 8371
+Enqueue Cell 8450 114 96 18
+114
+Enqueue Cell 8372 113 96 17
+113
+Enqueue Cell 8451 113 96 17
+113
+dequeue Cell 8451
+Enqueue Cell 8530 114 97 17
+114
+Enqueue Cell 8531 113 97 16
+113
+Enqueue Cell 8452 113 97 16
+113
+Enqueue Cell 8532 112 97 15
+112
+dequeue Cell 8532
+Enqueue Cell 8611 113 98 15
+113
+Enqueue Cell 8612 112 98 14
+112
+Enqueue Cell 8533 113 98 15
+113
+Enqueue Cell 8613 112 98 14
+112
+dequeue Cell 8613
+Enqueue Cell 8614 112 99 13
+112
+Enqueue Cell 8693 112 99 13
+112
+dequeue Cell 8693
+Enqueue Cell 8692 114 100 14
+114
+Enqueue Cell 8772 113 100 13
+113
+Enqueue Cell 8694 112 100 12
+112
+Enqueue Cell 8773 112 100 12
+112
+dequeue Cell 8773
+Enqueue Cell 8852 113 101 12
+113
+Enqueue Cell 8853 113 101 12
+113
+Enqueue Cell 8774 113 101 12
+113
+Enqueue Cell 8854 112 101 11
+112
+dequeue Cell 8854
+Enqueue Cell 8933 113 102 11
+113
+Enqueue Cell 8855 113 102 11
+113
+Enqueue Cell 8934 112 102 10
+112
+dequeue Cell 8934
+Enqueue Cell 8935 113 103 10
+113
+Enqueue Cell 9014 113 103 10
+113
+dequeue Cell 8694
+Enqueue Cell 8615 114 101 13
+114
+Enqueue Cell 8695 113 101 12
+113
+Enqueue Cell 8775 112 101 11
+112
+dequeue Cell 8775
+Enqueue Cell 8776 113 102 11
+113
+dequeue Cell 8614
+Enqueue Cell 8534 114 100 14
+114
+Enqueue Cell 8535 113 100 13
+113
+Change Cell 8615 114 100 13
+curr Cell 8534
+next Cell 8615
+113
+dequeue Cell 8612
+Enqueue Cell 8691 114 99 15
+114
+Change Cell 8692 114 99 14
+curr Cell 8691
+next Cell 8534
+iter Cell 8692
+113
+dequeue Cell 8692
+Enqueue Cell 8771 114 100 14
+114
+dequeue Cell 8615
+Enqueue Cell 8536 114 101 13
+114
+Enqueue Cell 8616 113 101 12
+113
+dequeue Cell 8616
+Enqueue Cell 8617 114 102 12
+114
+Enqueue Cell 8696 113 102 11
+113
+dequeue Cell 8696
+Enqueue Cell 8697 114 103 11
+114
+dequeue Cell 8535
+Enqueue Cell 8455 115 101 14
+115
+dequeue Cell 8776
+Enqueue Cell 8777 113 103 10
+113
+Enqueue Cell 8856 112 103 9
+112
+dequeue Cell 8856
+Enqueue Cell 8936 113 104 9
+113
+Enqueue Cell 8857 113 104 9
+113
+Enqueue Cell 8937 112 104 8
+112
+dequeue Cell 8937
+Enqueue Cell 8858 114 105 9
+114
+Enqueue Cell 9017 112 105 7
+112
+Enqueue Cell 8938 113 105 8
+113
+Enqueue Cell 9018 112 105 7
+112
+dequeue Cell 9018
+Enqueue Cell 8939 113 106 7
+113
+Enqueue Cell 9097 113 106 7
+113
+Enqueue Cell 9019 112 106 6
+112
+Enqueue Cell 9098 112 106 6
+112
+dequeue Cell 9098
+Enqueue Cell 9177 113 107 6
+113
+Enqueue Cell 9178 112 107 5
+112
+Enqueue Cell 9099 112 107 5
+112
+Enqueue Cell 9179 112 107 5
+112
+dequeue Cell 9179
+Enqueue Cell 9258 113 108 5
+113
+Enqueue Cell 9259 112 108 4
+112
+Enqueue Cell 9180 112 108 4
+112
+Enqueue Cell 9260 111 108 3
+111
+dequeue Cell 9260
+Enqueue Cell 9339 112 109 3
+112
+Enqueue Cell 9261 112 109 3
+112
+Enqueue Cell 9340 111 109 2
+111
+dequeue Cell 9340
+Enqueue Cell 9419 113 110 3
+113
+Enqueue Cell 9420 112 110 2
+112
+Enqueue Cell 9341 112 110 2
+112
+Enqueue Cell 9421 111 110 1
+111
+dequeue Cell 9421
+Enqueue Cell 9501 112 111 1
+112
+Enqueue Cell 9422 112 111 1
+112
+Enqueue Cell 9502 111 111 0
+111
+dequeue Cell 9502

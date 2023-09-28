@@ -61,6 +61,69 @@ def assignForests(points, numregions, width, height, wavelength, elevation, thre
     
     return treelevel
 
+def assignFertility(points, numregions, width, height, wavelength, elevation, thresholds):
+    noise = OpenSimplex(seed=randint(0, 9999999))
+    noise2 = OpenSimplex(seed=randint(0, 9999999))
+    noise3 = OpenSimplex(seed=randint(0, 9999999))
+
+    elevation_average = sum([e for e in elevation if e > thresholds[0]]) / len([e for e in elevation if e > thresholds[0]])
+
+    freq1 = 2
+    freq2 = freq1 * 2
+    freq3 = freq2 * 2
+
+    fertilelevel = []
+    for r in range(numregions):
+        nx = points[r][0] / width - 0.5
+        ny = points[r][1] / height - 0.5
+        sample = ((1 * noise.noise2d(freq1 * nx / wavelength, freq1 * ny / wavelength) + 
+                    1 * noise2.noise2d(freq2 * nx / wavelength, freq2 * ny / wavelength) +
+                    1 * noise3.noise2d(freq3 * nx / wavelength, freq3 * ny / wavelength)) / 3)
+        
+        # shape from -1 to 1 to 0 to 1
+        sample += 1
+        sample /= 2
+
+        sample += elevation_average * 0.5
+        
+        # modify by elevation and waterlevel
+        sample = sample - (elevation[r] * 0.5)
+        
+        fertilelevel.append(sample)
+    
+    return fertilelevel
+
+def assignOreDensity(points, numregions, width, height, wavelength, elevation, thresholds):
+    noise = OpenSimplex(seed=randint(0, 9999999))
+    noise2 = OpenSimplex(seed=randint(0, 9999999))
+    noise3 = OpenSimplex(seed=randint(0, 9999999))
+
+    elevation_average = sum([e for e in elevation if e > thresholds[0]]) / len([e for e in elevation if e > thresholds[0]])
+
+    freq1 = 2
+    freq2 = freq1 * 2
+    freq3 = freq2 * 2
+
+    orelevel = []
+    for r in range(numregions):
+        nx = points[r][0] / width - 0.5
+        ny = points[r][1] / height - 0.5
+        sample = ((1 * noise.noise2d(freq1 * nx / wavelength, freq1 * ny / wavelength) + 
+                    1 * noise2.noise2d(freq2 * nx / wavelength, freq2 * ny / wavelength) +
+                    1 * noise3.noise2d(freq3 * nx / wavelength, freq3 * ny / wavelength)) / 3)
+        
+        # shape from -1 to 1 to 0 to 1
+        sample += 1
+        sample /= 2
+
+        sample -= elevation_average * 0.5
+        
+        # modify by elevation and waterlevel
+        sample = sample + (elevation[r] * 0.5)
+        
+        orelevel.append(sample)
+    
+    return orelevel
 
 def assignElevation(points, numRegions, width, height, wavelength):
     noise = OpenSimplex(seed=randint(0, 9999999))
@@ -123,7 +186,7 @@ def get_elevation_thresholds(elevation: List[float]) -> List[float]:
     Let's us set categories for our elevation
     """
     sorted_elevation = sorted(elevation)
-    thresholds = [0.3, 0.5, 0.8, 0.95, 1]
+    thresholds = [0.3, 0.6, 0.9, 0.98, 1]
     return [sorted_elevation[int(len(sorted_elevation) * t)-1] for t in thresholds]
 
 
@@ -367,18 +430,20 @@ def create_worldmap(
     thresholds = get_elevation_thresholds(elevation)
 
     treelevel = assignForests(points, len(points), width, height, wavelength, elevation, thresholds)
+    fertility = assignFertility(points, len(points), width, height, wavelength, elevation, thresholds)
+    ore_density = assignOreDensity(points, len(points), width, height, wavelength, elevation, thresholds)
 
     coords = create_cell_coordinates(len(delaunay.halfedges), delaunay.triangles, delaunay, centers)
     #print(len(coords), len(points), len(elevation))
 
     # Make each point a Cell object
-    for (x, y), e, tree, i in zip(points, elevation, treelevel, range(len(points))):
+    for (x, y), e, tree, fert, ore, i in zip(points, elevation, treelevel, fertility, ore_density, range(len(points))):
         if i not in coords:
             continue
         for tr, t in enumerate(thresholds):
             if e <= t:
                 break
-        cell = Cell(i, x, y, e, e <= thresholds[0], coords[i], tr, tree)
+        cell = Cell(i, x, y, e, e <= thresholds[0], coords[i], tr, tree, fert, ore)
         map.cells.append(cell)
 
     # assign neighbors

@@ -54,12 +54,6 @@ def connect_cities(map: WorldMap):
     # improve sea connection finding
     # sea distance between cities should not include
     # embarkement cost!
-
-    # first set ports for cities which have water tiles.
-    # advanced: check if all water tiles in the city area
-    # belong to the same body of water, otherwise, create multiple ports.
-
-    # TODO: only make one port per connected water tiles of the same city
     for city in map.cities:
         portcounter = 0
         harbors: List[List[Cell]] = []
@@ -94,6 +88,8 @@ def connect_cities(map: WorldMap):
         # sort other city by their closeness (luftlinie)
         closest_cities = sorted(map.cities, key=lambda x: math.dist((city.cell.x, city.cell.y), (x.cell.x, x.cell.y)))
         
+        tolerance = 4
+
         for c in closest_cities:
             if c == city:
                 continue
@@ -115,6 +111,7 @@ def connect_cities(map: WorldMap):
                     if current.city not in [city, c, None]:
                         is_valid = False
                         break
+            
             if is_valid:
                 city.neighbors.append(c)
                 distance_cache[(city.id, c.id)] = distance
@@ -122,7 +119,10 @@ def connect_cities(map: WorldMap):
                 map.roads.append(path)
                 land_path_cache[(city.id, c.id)] = path
             else:
-                break
+                if tolerance == 0:
+                    break
+                else:
+                    tolerance -= 1
 
     distance_cache = {}
     sea_path_cache = {}
@@ -226,4 +226,12 @@ if __name__ == "__main__":
     from vindonissa.game_setup import mapgen
     from vindonissa.game_setup.mapviz import draw_map
     map = generate(mapgen.create_worldmap())
+
+    import pickle
+    import sys
+    sys.setrecursionlimit(100000)
+    pickle.dump(map, open("seed_42.pkl", mode="wb"))
+    import pickle
+    from vindonissa.game_setup.mapviz import draw_map
+    #map = pickle.load(open("savetest.pkl", mode="rb"))
     draw_map(map)

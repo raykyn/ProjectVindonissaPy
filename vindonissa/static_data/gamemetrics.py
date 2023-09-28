@@ -1,0 +1,6 @@
+#!/usr/bin/env python3
+
+# culture generation
+PROVINCES_PER_CULTURE = 6
+CULTURES_PER_GROUP = 4
+CULTURE_SPREAD_MAXIMUM_SEA_DISTANCE = 200

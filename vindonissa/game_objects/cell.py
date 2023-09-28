@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class Cell (object):
-    def __init__(self, id: int, x: float, y: float, elevation: float, is_water: bool, coords: List[List[float]], elevation_category: int, treelevel: float):
+    def __init__(self, id: int, x: float, y: float, elevation: float, is_water: bool, coords: List[List[float]], elevation_category: int, treelevel: float, fertility: float, ore_density: float):
         self.id = id
         self.x = x
         self.y = y
@@ -20,7 +20,11 @@ class Cell (object):
         self.coords = coords
         self.elevation_category = elevation_category
         self.vertices = set()
+
+        # map stuff
         self.trees: float = treelevel
+        self.fertility: float = fertility
+        self.ore_density: float = ore_density
 
         # water stuff
         self.is_water = is_water

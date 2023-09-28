@@ -125,14 +125,14 @@ def drawPoints(canvas, points):
             1
         )
     
-def drawPoint(canvas, point, gridsize, color=RED):
+def drawPoint(canvas, point, gridsize, color=RED, size=5):
     x = point[0]
     y = point[1]
     pygame.draw.circle(
         canvas,
         color,
         [x*gridsize, y*gridsize],
-        5
+        size
     )
 
 def drawTrees(canvas, cells):
@@ -203,8 +203,11 @@ def drawValues(canvas, cells, func, color):
             canvas,
             color,
             [cell.x*GRIDSIZE, cell.y*GRIDSIZE],
-            round(func(cell) * 0.2)
+            round(func(cell))
         )
+
+def grayscale(num: float):
+    return (255 * num, 255 * num, 255 * num)
 
 def draw_map(map: WorldMap):
     """
@@ -231,15 +234,37 @@ def draw_map(map: WorldMap):
         pygame.draw.lines(screen, BLACK, False, [(cell.x*GRIDSIZE, cell.y*GRIDSIZE) for cell in road])
     for river in map.rivers:
         drawRiver(screen, river)
+    
     drawCities(screen, map.cells)
-    drawPath(screen, [p.cell for c in map.cities for p in c.ports], YELLOW)
+    #core = map.cities[0]
+    #drawPoint(screen, (core.cell.x, core.cell.y), GRIDSIZE, RED)
+    for city in map.cities:
+        value = min(city.pop_size * 0.003, 1)
+        #print(value)
+        drawPoint(screen, (city.cell.x, city.cell.y), GRIDSIZE, grayscale(value))
+        """
+        if core == city:
+            continue
+        if city.culture is not None:
+            d = core.laws.culture_discrimination[city.culture].value
+            drawPoint(screen, (city.cell.x, city.cell.y), GRIDSIZE, grayscale(d))
+        else:
+            print(city.id)
+        """
+    #drawPath(screen, [p.cell for c in map.cities for p in c.ports], YELLOW)
     #drawPoint(screen, (map.cells[1056].x, map.cells[1056].y), GRIDSIZE, RED)
-    #drawPoint(screen, (map.cells[8000].x, map.cells[8000].y), GRIDSIZE, BLUE)
-    #drawPoint(screen, (map.cells[9500].x, map.cells[9500].y), GRIDSIZE, GREEN)
-    #drawPath(screen, map.cell_to_cell_path(map.cells[1056], map.cells[7000], test_pathfinding_cost), RED)
-    #drawPath(screen, map.cell_to_cell_path(map.cells[7000], map.cells[1056], test_pathfinding_cost), YELLOW)
+    #drawPoint(screen, (map.cities[24].cell.x, map.cities[24].cell.y), GRIDSIZE, BLUE)
+    #drawPoint(screen, (map.cities[595].cell.x, map.cities[595].cell.y), GRIDSIZE, GREEN)
+    #drawPoint(screen, (map.cities[81].cell.x, map.cities[81].cell.y), GRIDSIZE, BLUE)
+    #for n in map.cities[595].neighbors:
+    #    drawPoint(screen, (n.cell.x, n.cell.y), GRIDSIZE, RED)
+    #for n in map.cities[81].neighbors:
+    #    drawPoint(screen, (n.cell.x, n.cell.y), GRIDSIZE, RED)
+    #print(map.city_to_city_path(map.cities[595], map.cities[81]))
+    #drawPath(screen, [c.cell for c in map.city_to_city_path(map.cities[24], map.cities[0])], RED)
+    #drawPath(screen, map.cell_to_cell_path(map.cities[595].cell, map.cities[81].cell, test_pathfinding_cost), YELLOW)
     #drawPath(screen, [c for c in map.cells if c.is_border_cell_south], YELLOW)
-    #drawValues(screen, map.cells, lambda x: x.route_counter, YELLOW)
+    #drawValues(screen, map.cells, lambda x: x.fertility * 5, YELLOW)
 
     #drawPoints(screen, [(p.x, p.y) for p in map.cells if p.is_border_cell])
     """

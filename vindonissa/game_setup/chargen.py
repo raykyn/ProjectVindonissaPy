@@ -77,7 +77,7 @@ def create_parent_siblings(head: Character, map: WorldMap):
     """
     parent = Character(len(map.characters), head.family, head.culture, head.age + random.randrange(16, 45), not head.is_female)
     map.characters.append(parent)
-    parent.is_alive = False
+    parent.die()
     parent.children.append(head)
     if parent.is_female:
         head.mother = parent

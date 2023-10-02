@@ -16,7 +16,7 @@ class Character(object):
         family.members.append(self)
         self.culture = culture
         self.is_female = is_female
-        self.is_alive = True
+        self.__is_alive = True
 
         # age and health
         self.age = age
@@ -24,8 +24,8 @@ class Character(object):
             self.birthday = random.randint(0, 359)
         else:
             self.birthday = birthday
-        EventSystem.queue_yearly_event(Event(self.age_func), self.birthday)
-        # TODO: Unqueue on Death!
+        self.birthday_event = Event(self.age_func)
+        EventSystem.queue_yearly_event(self.birthday_event, self.birthday)
 
         # family relations
         self.spouse: Character
@@ -39,7 +39,19 @@ class Character(object):
 
         # titles and ownership
         self.__holdings: List[CityTitle] = []
-
+    
+    @property
+    def is_alive(self):
+        return self.__is_alive
+    
+    def die(self):
+        """
+        Called when a character dies.
+        NOTE: Remember to dequeue all regularly happening events for this character.
+        TODO: Trigger inheritance mechanics.
+        """
+        self.__is_alive = False
+        EventSystem.dequeue_yearly_event(self.birthday_event, self.birthday)
 
     @property
     def holdings(self):

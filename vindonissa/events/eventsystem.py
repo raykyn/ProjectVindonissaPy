@@ -24,8 +24,12 @@ class EventSystem(object):
     yearly_events: List[List[Event]] = [[] for _ in range(360)]
 
     @classmethod
-    def queue_yearly_event(cls, event, day: int):
+    def queue_yearly_event(cls, event: Event, day: int):
         cls.yearly_events[day].append(event)
+
+    @classmethod
+    def dequeue_yearly_event(cls, event: Event, day: int):
+        cls.yearly_events[day].remove(event)
 
     @classmethod
     def execute_yearly_events(cls, day: int):

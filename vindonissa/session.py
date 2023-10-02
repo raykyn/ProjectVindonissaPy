@@ -2,6 +2,7 @@
 
 import random
 
+from vindonissa.util.calendar import Calendar
 from game_objects.map import WorldMap
 from vindonissa.game_setup import mapgen, citygen, culturegen, popgen, chargen
 
@@ -12,10 +13,11 @@ class Session(object):
     or events that are queued.
     Saving a game session should be as easy as to binarize this object.
     """
-    def __init__(self, left_text):
+    def __init__(self, main):
         # show stuff to player
-        self.left_text = left_text
+        self.main = main
 
+        self.calendar = Calendar(main.pygame)
 
     def setup(self, seed: int = 42) -> None:
         """
@@ -24,13 +26,12 @@ class Session(object):
         random.seed(seed)
         # TODO: Update screen every time a step in world generation has finished
         self.world_map: WorldMap = mapgen.create_worldmap()
-        self.left_text.append_html_text("<br>Finished terrain generation!")
+        self.main.write_left_text("Finished terrain generation!")
         citygen.generate(self.world_map)
-        self.left_text.append_html_text("<br>Finished city generation!")
+        self.main.write_left_text("Finished city generation!")
         culturegen.generate(self.world_map)
-        self.left_text.append_html_text("<br>Finished culture generation!")
+        self.main.write_left_text("Finished culture generation!")
         popgen.generate(self.world_map)
-        self.left_text.append_html_text("<br>Finished population generation!")
+        self.main.write_left_text("Finished population generation!")
         chargen.generate(self.world_map)
-        self.left_text.append_html_text("<br>Finished character generation!")
-
+        self.main.write_left_text("Finished character generation!")

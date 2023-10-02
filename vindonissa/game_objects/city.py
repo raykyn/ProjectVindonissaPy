@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 from typing import Dict, List
 from vindonissa.game_objects.laws import CityLaws
+from vindonissa.game_objects.title import CityTitle
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -83,6 +84,9 @@ class City(WayNode):
         # culture and religion
         self.culture: Culture|None = None
         self.laws = CityLaws()
+
+        # title and ownership
+        self.title = CityTitle(self.id, self, self.laws)
 
     @property
     def pop_size(self):

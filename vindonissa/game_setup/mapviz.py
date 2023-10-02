@@ -239,8 +239,9 @@ def draw_map(map: WorldMap):
     #core = map.cities[0]
     #drawPoint(screen, (core.cell.x, core.cell.y), GRIDSIZE, RED)
     for city in map.cities:
-        value = min(city.pop_size * 0.003, 1)
+        #value = min(city.pop_size * 0.003, 1)
         #print(value)
+        value = 1 if city.title.de_facto_holder.is_female else 0
         drawPoint(screen, (city.cell.x, city.cell.y), GRIDSIZE, grayscale(value))
         """
         if core == city:

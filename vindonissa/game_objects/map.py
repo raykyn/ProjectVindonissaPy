@@ -4,6 +4,8 @@ import math
 from typing import List, Dict
 import sys
 
+from vindonissa.game_objects.character import Character
+from vindonissa.game_objects.family import Family, Dynasty
 from vindonissa.game_objects.cell import Cell
 from vindonissa.util.priority_queues import CellPriorityQueue, CityPriorityQueue
 from vindonissa.game_objects.river import River
@@ -31,6 +33,11 @@ class WorldMap(object):
         self.cities: List[City] = []
         self.cultures: List[Culture] = []
         self.culture_groups: List[CultureGroup] = []
+
+        # characters and families
+        self.characters: List[Character] = []
+        self.families: List[Family] = []
+        self.dynasties: List[Dynasty] = []
 
         # only visuals
         self.roads: List[List[Cell]] = []

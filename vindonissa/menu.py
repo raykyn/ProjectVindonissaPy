@@ -19,6 +19,15 @@ def process_command(command):
     elif command == "new game":
         session = Session(LEFT_TEXT)
         session.setup()
+    elif command == "continue game":
+        # TODO: Load up the newest savegame in the savegame folder
+        raise NotImplementedError
+    elif command == "load game":
+        # TODO: Make a little dialogue
+        raise NotImplementedError
+    elif command == "load map":
+        # TODO: load a binarized map and start a game on it.
+        raise NotImplementedError
     else:
         out = "Command was not recognized."
         # TODO: Implement a function which gives suggestions for the meant command

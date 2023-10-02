@@ -72,5 +72,6 @@ if __name__ == "__main__":
     import pickle
     map = pickle.load(open("seed_42_cultures.pkl", mode="rb"))
     generate(map)
+    pickle.dump(map, open("seed_42_pops.pkl", mode="wb"))
     from vindonissa.game_setup.mapviz import draw_map
     draw_map(map)

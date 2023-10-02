@@ -28,6 +28,20 @@ class Calendar(object):
 
         self.time_event = self.pygame.event.custom_type()
 
+    def __getstate__(self):
+        """
+        Assign which values are pickled!
+        Important as we can't pickle modules!
+        """
+        return (self.yearday, self.year)
+    
+    def __setstate__(self, state):
+        """
+        Assign which values are pickled!
+        Important as we can't pickle modules!
+        """
+        self.yearday, self.year = state
+
     def start_timer(self, millis_per_day):
         self.pygame.time.set_timer(self.time_event, millis_per_day)
 

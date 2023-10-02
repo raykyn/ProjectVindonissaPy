@@ -5,6 +5,8 @@ import pygame_gui
 
 from vindonissa.menu import Menu
 
+from scene import Scene
+
 
 class MainLoop(object):
     def __init__(self):
@@ -19,15 +21,19 @@ class MainLoop(object):
         pygame.display.update()
 
     def write_left_text(self, text: str):
-        assert self.left_text is not None
         self.left_text.append_html_text("<br>" + text)
+        self.update_screen()
+
+    def write_right_text(self, text: str):
+        self.right_text.clear()
+        self.right_text.append_html_text("<br>" + text)
         self.update_screen()
 
     def build_interface(self):
         datebox_height = 40
         datebox_width = 140
         self.date_box = pygame_gui.elements.UITextBox(
-            "01. Jan. 0001",
+            "Menu",
             pygame.Rect((10, 10, datebox_width, datebox_height)))
         
         button_width = 50
@@ -69,7 +75,7 @@ class MainLoop(object):
 
         clock = pygame.time.Clock()
         # start in menu, may switch later
-        scene = Menu(self)
+        self.scene: Scene = Menu(self)
         self.session = None
         # TODO: change menu so it shows this whenever scene switches to it
         
@@ -90,17 +96,18 @@ class MainLoop(object):
                     if event.ui_element == self.left_input:
                         text_elem = self.left_text  
                         input_elem = self.left_input 
+                        text_elem.append_html_text("<br>> " + event.text)
+                        input_elem.clear()
+                        self.update_screen()
+                        self.scene.process_command(event.text)
                     elif event.ui_element == self.right_input:
                         text_elem = self.right_text  
                         input_elem = self.right_input
+                        input_elem.clear()
+                        self.scene.process_question(event.text)
                     else:
                         continue
-                        
-                    text_elem.append_html_text("<br>> " + event.text)
-                    input_elem.clear()
-                    self.update_screen()
-                    scene.process_command(event.text)
-
+                    
                 if self.session is not None and event.type == self.session.calendar.time_event and not day_passed:
                     self.session.calendar.pass_day()
                     self.date_box.clear()

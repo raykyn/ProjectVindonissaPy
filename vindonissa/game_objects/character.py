@@ -39,6 +39,12 @@ class Character(object):
 
         # titles and ownership
         self.__holdings: List[CityTitle] = []
+
+    def __str__(self):
+        return "Character " + str(self.id)
+    
+    def __repr__(self):
+        return "Character " + str(self.id)
     
     @property
     def is_alive(self):
@@ -92,3 +98,10 @@ class Character(object):
         self.age += 1
         if self.id == 42:
             print(self.age)
+
+    @property
+    def info(self):
+        out = ""
+        for k, v in self.__dict__.items():
+            out += f"<br>{k}: {v}"
+        return out

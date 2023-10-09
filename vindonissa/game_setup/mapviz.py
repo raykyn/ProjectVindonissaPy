@@ -111,7 +111,7 @@ def drawCellColors(screen, gridsize, triangles, numEdges, centers, delaunay, ele
 def drawCellColors2(screen, gridsize, cells):
     for cell in cells:
         #pygame.draw.polygon(screen, heightColorByCell(cell), [(x * gridsize, y * gridsize) for x, y in cell.coords])
-        pygame.draw.polygon(screen, heightColorByCategory(cell), [(x * gridsize, y * gridsize) for x, y in cell.coords])
+        pygame.draw.polygon(screen, heightColorByCategory(cell), [(x * gridsize, y * gridsize) for x, y in cell.coords])  # type: ignore
 
 
 def drawPoints(canvas, points):
@@ -239,9 +239,10 @@ def draw_map(map: WorldMap):
     #core = map.cities[0]
     #drawPoint(screen, (core.cell.x, core.cell.y), GRIDSIZE, RED)
     for city in map.cities:
-        #value = min(city.pop_size * 0.003, 1)
+        print(city.capacities.mining.maximum)
+        value = min(city.capacities.mining.maximum * 0.001, 1)
         #print(value)
-        value = 1 if city.title.de_facto_holder.is_female else 0
+        #value = 1 if city.title.de_facto_holder.is_female else 0
         drawPoint(screen, (city.cell.x, city.cell.y), GRIDSIZE, grayscale(value))
         """
         if core == city:
@@ -297,3 +298,13 @@ def draw_map(map: WorldMap):
         
 
     pygame.quit()
+
+
+if __name__ == "__main__":
+    import random
+    random.seed(42)
+    import pickle
+    import sys
+    sys.setrecursionlimit(9999999)
+    map = pickle.load(open("mapfiles/test_wealth.pkl", mode="rb"))
+    draw_map(map)

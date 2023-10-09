@@ -12,26 +12,27 @@ from vindonissa.game_objects.pop import Pop
 def set_initial_capacities(city: City):
     for cell in city.terrain:
         terrain_type = TERRAIN_TYPES[cell.elevation_category]
-        farming = (0.5 * terrain_type.farming) + (0.5 * terrain_type.farming * cell.fertility)
-        fishing = (0.5 * terrain_type.fishing) + (0.5 * terrain_type.fishing * cell.fertility)
+        farming = (0.5 * terrain_type.farming) + (0.5 * terrain_type.farming)
+        fishing = (0.5 * terrain_type.fishing) + (0.5 * terrain_type.fishing)
         mining = (0.5 * terrain_type.mining) + (0.5 * terrain_type.mining * cell.ore_density)
         if cell.has_river:
             farming *= RIVER_BONUS_FARMING
-            fishing += (RIVER_BONUS_FISHING * cell.fertility)
-        city.capacities.farming += farming
-        city.capacities.fishing += fishing
-        city.capacities.mining += mining
+            fishing += (RIVER_BONUS_FISHING)
+        city.capacities.farming.maximum += farming
+        city.capacities.fishing.maximum += fishing
+        city.capacities.mining.maximum += mining
+
         # TODO: Forestry and how forests impact capacities
 
     # normalize by terrain size
-    city.capacities.farming = city.capacities.farming / len(city.terrain) # type: ignore
-    city.capacities.fishing = city.capacities.fishing / len(city.terrain) # type: ignore
-    city.capacities.mining = city.capacities.mining / len(city.terrain) # type: ignore
+    city.capacities.farming.maximum = city.capacities.farming.maximum / len(city.terrain) # type: ignore
+    city.capacities.fishing.maximum = city.capacities.fishing.maximum / len(city.terrain) # type: ignore
+    city.capacities.mining.maximum = city.capacities.mining.maximum / len(city.terrain) # type: ignore
 
 
 def set_initial_pops(city: City, max_routes: int):
     assert city.culture is not None
-    pop_density = 0.2 + 0.2 * (0.5 * (float(city.cell.route_counter) / float(max_routes)) + 0.5 * random.random())  # 0.2 to 0.4 depending on proto trade route value and a bit of randomness
+    pop_density = 0.2 + 0.1 * city.fertility + 0.2 * (0.5 * (float(city.cell.route_counter) / float(max_routes)) + 0.5 * random.random())  # 0.2 to 0.5 depending on proto trade route value, fertility and a bit of randomness
     same_culture = 1
     same_group = 1 - city.culture.traits.xenophobia * 0.5
     other_group = 1 - city.culture.traits.xenophobia
@@ -54,7 +55,7 @@ def set_initial_pops(city: City, max_routes: int):
     for culture, value in culture_counter.items():
         bonus = 0.4 if culture == city.culture else 0
         share = (value / total_values) * 0.6 + bonus
-        pop = Pop(culture, round(city.capacities.food * pop_density * share))
+        pop = Pop(culture, round(city.capacities.food_maximum * pop_density * share))
         city.pops.append(pop)
 
 

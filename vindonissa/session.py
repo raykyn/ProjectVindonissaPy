@@ -10,7 +10,7 @@ from vindonissa.events.eventsystem import EventSystem
 from vindonissa.scene import Scene
 from vindonissa.util.calendar import Calendar
 from game_objects.map import WorldMap
-from vindonissa.game_setup import mapgen, citygen, culturegen, popgen, chargen
+from vindonissa.game_setup import mapgen, citygen, culturegen, popgen, chargen, final_setup
 
 class Session(Scene):
     """
@@ -41,6 +41,7 @@ class Session(Scene):
         self.main.write_left_text("Finished population generation!")
         chargen.generate(self.map)
         self.main.write_left_text("Finished character generation!")
+        final_setup.setup(self.map)
 
     def __getstate__(self):
         """
@@ -98,7 +99,10 @@ class Session(Scene):
                         case _:
                             self.main.write_left_text("Command was not recognized.")
                             self.main.write_left_text("Were you looking for one of these commands?<br>- save game<br>- save map")
-
+            case "show_map":
+                # only for debug atm as it shuts down the game
+                from vindonissa.game_setup.mapviz import draw_map
+                draw_map(self.map)
             case _:
                 self.main.write_left_text("Command was not recognized.")
 

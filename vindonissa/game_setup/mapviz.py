@@ -3,7 +3,9 @@
 import math
 import pygame
 from typing import List
+from collections import Counter
 
+from vindonissa.game_objects.city import City
 from vindonissa.game_objects.cell import Cell
 from vindonissa.game_objects.map import WorldMap
 
@@ -235,12 +237,12 @@ def draw_map(map: WorldMap):
     for river in map.rivers:
         drawRiver(screen, river)
     
-    drawCities(screen, map.cells)
+    #drawCities(screen, map.cells)
     #core = map.cities[0]
     #drawPoint(screen, (core.cell.x, core.cell.y), GRIDSIZE, RED)
     for city in map.cities:
-        print(city.capacities.mining.maximum)
-        value = min(city.capacities.mining.maximum * 0.001, 1)
+        #print(city.wealth, city.pop_size, city.capacities.food_production, city.capacities.food_maximum, city.capacities.farming.worked)
+        value = max(min(city.wealth * 0.01, 1), 0)
         #print(value)
         #value = 1 if city.title.de_facto_holder.is_female else 0
         drawPoint(screen, (city.cell.x, city.cell.y), GRIDSIZE, grayscale(value))
@@ -253,9 +255,25 @@ def draw_map(map: WorldMap):
         else:
             print(city.id)
         """
+
+    edge_counter = Counter()
+    for route in map.traderoutes:
+        for c1, c2 in zip(route[:-1], route[1:]):
+            edge_counter[((c1.cell.x*GRIDSIZE, c1.cell.y*GRIDSIZE), (c2.cell.x*GRIDSIZE, c2.cell.y*GRIDSIZE))] += 1
+    for edge, count in edge_counter.most_common():
+        if count > 1:
+            pygame.draw.line(screen, BLACK, edge[0], edge[1], round(count))
+
     #drawPath(screen, [p.cell for c in map.cities for p in c.ports], YELLOW)
-    #drawPoint(screen, (map.cells[1056].x, map.cells[1056].y), GRIDSIZE, RED)
-    #drawPoint(screen, (map.cities[24].cell.x, map.cities[24].cell.y), GRIDSIZE, BLUE)
+    #drawPoint(screen, (map.cells[1048].x, map.cells[1048].y), GRIDSIZE, RED)
+
+    for city in sorted(map.cities, key=lambda x: x.wealth):
+        #print(city.capacities.trade.maximum, city.capacities.trade.worked, city.capacities.trade.production, city.wealth, city.pop_size)
+        #if city.traderoute_counter > 0:
+        drawPoint(screen, (city.cell.x, city.cell.y), GRIDSIZE, RED, round(city.wealth * 0.005))
+        drawPoint(screen, (city.cell.x, city.cell.y), GRIDSIZE, BLACK, round(city.capacities.trade.production * 0.005))
+       
+    #pygame.draw.lines(screen, BLACK, False, [(r.cell.x*GRIDSIZE, r.cell.y*GRIDSIZE) for r in best_route[0]])
     #drawPoint(screen, (map.cities[595].cell.x, map.cities[595].cell.y), GRIDSIZE, GREEN)
     #drawPoint(screen, (map.cities[81].cell.x, map.cities[81].cell.y), GRIDSIZE, BLUE)
     #for n in map.cities[595].neighbors:
@@ -306,5 +324,5 @@ if __name__ == "__main__":
     import pickle
     import sys
     sys.setrecursionlimit(9999999)
-    map = pickle.load(open("mapfiles/test_wealth.pkl", mode="rb"))
+    map = pickle.load(open("mapfiles/test_routes.pkl", mode="rb"))
     draw_map(map)

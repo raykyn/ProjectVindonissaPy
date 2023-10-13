@@ -41,7 +41,7 @@ class Session(Scene):
         self.main.write_left_text("Finished population generation!")
         chargen.generate(self.map)
         self.main.write_left_text("Finished character generation!")
-        final_setup.setup(self.map)
+        #final_setup.setup(self.map)
 
     def __getstate__(self):
         """

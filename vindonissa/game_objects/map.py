@@ -39,6 +39,10 @@ class WorldMap(object):
         self.families: List[Family] = []
         self.dynasties: List[Dynasty] = []
 
+        # trade
+        self.trade_endpoints = []
+        self.traderoutes = []  # currently only for viz
+
         # only visuals
         self.roads: List[List[Cell]] = []
         self.sea_roads: List[List[Cell]] = []
@@ -126,6 +130,39 @@ class WorldMap(object):
     def get_cell_by_id(self, idx):
         return self.cells_by_id[idx]
     
+    def get_closest_city(self, cell: Cell, cost, debug=False) -> City|None:
+        """
+        A bit specific, but get the closest city from given cell.
+        We count city territory as part of the city.
+        """
+
+        if cell.city is not None:
+            return cell.city
+        
+        for c in self.cells:
+            c.distance = SEARCH_MAX_DISTANCE
+
+        frontier: List[Cell] = []
+        cell.distance = 0
+        frontier.append(cell)
+        while len(frontier) > 0:
+            current = frontier.pop(0)
+
+            if current.city is not None:
+                return current.city
+
+            for neighbor in current.neighbors:
+                distance = current.distance
+                distance += cost(current, neighbor)
+                if neighbor.distance == SEARCH_MAX_DISTANCE:
+                    neighbor.distance = distance
+                    frontier.append(neighbor)
+                elif distance < neighbor.distance:
+                    neighbor.distance = distance
+                frontier.sort(key=lambda x: x.distance)
+
+        return None
+
     def city_to_city_dist(self, source: WayNode, target: WayNode, only_land=False, only_water=False) -> int|None:
         path = self.city_to_city_path(source, target, only_land=only_land, only_water=only_water)
         if not path:
@@ -136,7 +173,16 @@ class WorldMap(object):
                 cost += current.get_distance(next)
             return cost
 
-    def city_to_city_path(self, source: WayNode, target: WayNode, only_land=False, only_water=False) -> List[WayNode]:
+    def city_to_city_path(self, source: WayNode, target: WayNode, only_land=False, only_water=False, apply_wealth_modifier=False) -> List[WayNode]:
+        """
+        apply_wealth_modifier: Modifies distance by relative city wealth.
+        """
+        if apply_wealth_modifier:
+            average_wealth = sum([c.wealth for c in self.cities]) / len(self.cities)
+            half_avg_wealth = average_wealth * 0.5
+            double_avg_wealth = average_wealth * 2
+            z = double_avg_wealth - half_avg_wealth
+        
         path = []
 
         self.city_priority_queue.clear()
@@ -173,6 +219,34 @@ class WorldMap(object):
                 raise ValueError
 
             for neighbor, cost in zip(neighbors, costs):
+                
+                if apply_wealth_modifier:
+                    assert type(source) == City
+                    if type(neighbor) == City:
+                        w = neighbor.wealth
+                        t = neighbor.traderoute_counter
+                    elif type(neighbor) == Port:
+                        w = neighbor.city.wealth
+                        t = neighbor.city.traderoute_counter
+                    else:
+                        w = 0
+                        t = 0
+                    
+                    # factor is 1 if city's wealth is half of average wealth, 2 if doubl
+                    x = w - half_avg_wealth  # type: ignore
+                    if x <= 0:
+                        wealth_factor = 1
+                    else:
+                        share = x / z  # type: ignore
+                        wealth_factor = min(1 + share, 2)
+
+                    if t > 0:
+                        wealth_factor = wealth_factor * ( t / (t*t) )
+
+                    # wealth factor is lower than 1 if source is richer, else over 1
+                    cost = cost * 0.5 + ((cost / wealth_factor) * 0.5)
+                    cost = round(cost)
+
                 #print("neigh", neighbor, cost)
                 assert neighbor is not None
                 if only_land and type(neighbor) == Port:
@@ -184,7 +258,8 @@ class WorldMap(object):
                 if neighbor.distance == SEARCH_MAX_DISTANCE:
                     neighbor.distance = distance
                     neighbor.path_from = current
-                    neighbor.search_heuristic = round(math.dist((neighbor.cell.x, neighbor.cell.y), (target.cell.x, target.cell.y)) * 1)
+                    neighbor.search_heuristic = round(math.dist((neighbor.cell.x, neighbor.cell.y), (target.cell.x, target.cell.y)) * 20)
+                    #print(distance, neighbor.search_heuristic) # NOTE: We need to get find a good amount for the heuristic. The heuristic also depends on the average cost between routes
                     self.city_priority_queue.enqueue(neighbor)
                 elif distance < neighbor.distance:
                     old_prio = neighbor.search_priority

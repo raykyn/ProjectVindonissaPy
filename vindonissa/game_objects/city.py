@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 from functools import cached_property
 import random
+import time
 from typing import Dict, List
 from vindonissa.game_objects.laws import CityLaws
 from vindonissa.game_objects.title import CityTitle
@@ -142,45 +143,35 @@ class Capacities(object):
 
         return val
     
-    def raise_capacity(self, cap: Capacity, value: float):
+    def set_new_capacity_maximum(self, cap: Capacity, value: float):
         """
         Raise the maximum of a capacity and change the values accordingly.
         """
-        cap.maximum += value
+        cap.maximum = value
         if cap.is_overextended:
             cap.production = (cap.maximum * cap.base_production) + ((cap.worked - cap.maximum) * cap.base_production * 0.5)
         else:
             cap.production = cap.worked * cap.base_production
 
-    def lower_capacity(self, cap: Capacity, value: float):
-        """
-        Lowers the capacity maximum, modifies values where needed.
-        """
-        cap.maximum -= value
-        if cap.is_overextended:
-            cap.production = (cap.maximum * cap.base_production) + ((cap.worked - cap.maximum) * cap.base_production * 0.5)
-        else:
-            cap.production = cap.worked * cap.base_production
-
-    def remove_worker(self, cap: Capacity):
+    def remove_worker(self, cap: Capacity, num: int=1):
         """
         Remove a worker from a capacity and checks if the capacitys value needs to be modified.
         """
+        cap.worked -= num
         if cap.is_overextended:
-            cap.production -= cap.base_production * 0.5
+            cap.production = (cap.maximum * cap.base_production) + ((cap.worked - cap.maximum) * cap.base_production * 0.5)
         else:
-            cap.production -= cap.base_production
-        cap.worked -= 1
-    
-    def add_worker(self, cap: Capacity):
+            cap.production = cap.worked * cap.base_production
+
+    def add_worker(self, cap: Capacity, num: int=1):
         """
-        Adds a worker to a capacity and checks if the capacitys value needs to be modified.
+        Adds one or multiple worker to a capacity and checks if the capacitys value needs to be modified.
         """
-        cap.worked += 1
+        cap.worked += num
         if cap.is_overextended:
-            cap.production += cap.base_production * 0.5
+            cap.production = (cap.maximum * cap.base_production) + ((cap.worked - cap.maximum) * cap.base_production * 0.5)
         else:
-            cap.production += cap.base_production
+            cap.production = cap.worked * cap.base_production
     
     def set_initial_values(self, city):
         self.farming.base_production = FOOD_PRODUCTION_BASE + FOOD_PRODUCTION_MOD * city.fertility * 2
@@ -208,6 +199,12 @@ class City(WayNode):
         self.capacities = Capacities(self)
         self.pops: List[Pop] = []
 
+        # trade
+        self.potential_traderoutes: List[List[City]] = []  # holds all traderoutes that COULD go off from that city
+        self.best_traderoute: List[City] = []  # holds the best traderoute, mainly for fluff and viz stuff
+        self.traderoute_counter: int = 0  # holds the number of traderoutes that cross this city
+        self.traderoute_wealth: float = 0  # holds the accumulated wealth of all traderoutes passing the city
+
         # ports and distances to ports
         self.ports: List[Port] = []
         self.port_connections: List[int] = []
@@ -218,6 +215,12 @@ class City(WayNode):
 
         # title and ownership
         self.title = CityTitle(self.id, self, self.laws)
+
+    def __str__(self):
+        return f"City {self.id}"
+    
+    def __repr__(self):
+        return f"City {self.id}"
 
     @property
     def wealth(self):
@@ -239,6 +242,19 @@ class City(WayNode):
     def pop_size(self):
         return sum([p.size for p in self.pops])
     
+    def choose_best_traderoute(self):
+        best_route = ([], 0)
+        for route in self.potential_traderoutes:
+            value = sum([r.wealth for r in route])
+            if value > best_route[1]:
+                best_route = (route, value)
+        
+        self.best_traderoute = best_route[0]
+        
+        for city in best_route[0]:
+            city.traderoute_counter += 1
+            city.traderoute_wealth += best_route[1]
+    
     def set_inital_values(self):
         self.capacities.set_initial_values(self)  # TODO: Move to be only executed once, not every year
         self.update_pop_assignments(disable_cap=True)
@@ -252,27 +268,41 @@ class City(WayNode):
         self.update_pop_assignments()
         self.update_production()
     
-    def update_pop_assignments(self, disable_cap = False):
+    def update_pop_assignments(self, disable_cap=False, start_batch_size=256):
         """
         Update which capacities are worked by pops.
 
         For the moment, we only allocate new pops, later we need to do reallocation as well.
+
+        We convert pops in batches which we then make smaller if no full batches can be converted.
         """
+        start_time = time.time()
         pop_conversion_pool = POP_CONVERSION_MAX * self.pop_size
         if disable_cap:
-            pop_conversion_pool = 1000
+            pop_conversion_pool = 100000
+        end_time = time.time()
+        #print("set conv pool:", end_time-start_time)
 
+        start_time = time.time()
         unassigned_pops = [pop for pop in self.pops if pop.work == Work.Unassigned]
+        end_time = time.time()
+        #print("choose unass:", end_time-start_time)
 
         converted = 0
+        
+        start_time = time.time()
+        # print("="*80)
         while unassigned_pops and converted < pop_conversion_pool:
             curr_pop = unassigned_pops[0]
+            batch_size = start_batch_size
+            if curr_pop.size < batch_size:
+                batch_size = curr_pop.size
             # get the highest prio capacity
-            sorted_caps = sorted(self.capacities.capacities, key=lambda x: (self.capacities.get_exp_value_when_raised(x), -(x.worked/max(x.maximum, 1))), reverse=True)
+            sorted_caps = sorted([cap for cap in self.capacities.capacities if cap.worked < cap.maximum * 2], key=lambda x: (self.capacities.get_exp_value_when_raised(x), -(x.worked/max(x.maximum, 1))), reverse=True)
             highest_prio_cap = sorted_caps[0]
 
             # Add worker
-            self.capacities.add_worker(highest_prio_cap)
+            self.capacities.add_worker(highest_prio_cap, num=batch_size)
 
             # Create new pop if necessary or add to a fitting pop
             new_pop = curr_pop.split_off_for_work(highest_prio_cap.work_type)  # type: ignore
@@ -287,31 +317,48 @@ class City(WayNode):
                 self.pops.append(new_pop)
 
             # size + 1 new pop
-            new_pop.size += 1
+            new_pop.size += batch_size
 
             # Downsize old pop
-            curr_pop.size -= 1
+            curr_pop.size -= batch_size
             if curr_pop.size == 0:
                 self.pops.remove(curr_pop)
                 unassigned_pops.remove(curr_pop)
                 del curr_pop
 
-            converted += 1
+            #print("popsize:", self.pop_size)
+            #print(self.capacities.farming.worked)
+            converted += batch_size
+        end_time = time.time()
+        #print("Unass:", end_time - start_time)
 
-        while converted < pop_conversion_pool:
-            add_exp_cap_values = sorted(self.capacities.capacities, key=lambda x: (self.capacities.get_exp_value_when_raised(x), -(x.worked/max(x.maximum, 1))), reverse=True)
+        start_time = time.time()
+        curr_start_batch_size = start_batch_size
+        conv_cap_types = []
+        while converted < pop_conversion_pool and curr_start_batch_size >= 1:
+            add_exp_cap_values = sorted([cap for cap in self.capacities.capacities if cap.worked < cap.maximum * 2], key=lambda x: (self.capacities.get_exp_value_when_raised(x), -(x.worked/max(x.maximum, 1))), reverse=True)
             red_exp_cap_values = sorted([c for c in self.capacities.capacities if c.worked > 0], key=lambda x: (self.capacities.get_curr_value(x), -(x.worked/max(x.maximum, 1))), reverse=True)
 
             highest_prio_cap_to_raise = add_exp_cap_values[0]
             highest_prio_cap_to_lower = red_exp_cap_values[-1]
 
             if self.capacities.get_exp_value_when_raised(highest_prio_cap_to_raise) > self.capacities.get_curr_value(highest_prio_cap_to_lower):
-                self.capacities.add_worker(highest_prio_cap_to_raise)
                 
+                conv_cap_types.append((highest_prio_cap_to_lower.work_type, highest_prio_cap_to_lower.worked))
+                if len(conv_cap_types) > 2:
+                    if conv_cap_types[-1] == conv_cap_types[-3]:
+                        # repeats of the same action was detected!
+                        curr_start_batch_size = round(curr_start_batch_size * 0.5)
+
                 # look for a pop to downsize (maybe weight this by pop size?)
                 curr_pop = random.choice([pop for pop in self.pops if pop.work == highest_prio_cap_to_lower.work_type])
+                
+                batch_size = min(curr_start_batch_size, highest_prio_cap_to_lower.worked, curr_pop.size)
+
+                self.capacities.add_worker(highest_prio_cap_to_raise, num=batch_size)
+                
                 # modify pop sizes, create new pops if necessary
-                new_pop = curr_pop.split_off_for_work(highest_prio_cap.work_type)  # type: ignore
+                new_pop = curr_pop.split_off_for_work(highest_prio_cap_to_raise.work_type)  # type: ignore
                 po = None
                 for p in self.pops:
                     if p.check_if_equal_but_not_same(new_pop):
@@ -323,21 +370,24 @@ class City(WayNode):
                     self.pops.append(new_pop)
 
                 # size + 1 new pop
-                new_pop.size += 1
+                new_pop.size += batch_size
 
-                self.capacities.remove_worker(highest_prio_cap_to_lower)
+                self.capacities.remove_worker(highest_prio_cap_to_lower, num=batch_size)
                 # modify pop sizes, create new pops if necessary
                 
                 # Downsize old pop
-                curr_pop.size -= 1
+                curr_pop.size -= batch_size
                 if curr_pop.size == 0:
                     self.pops.remove(curr_pop)
-                    unassigned_pops.remove(curr_pop)
                     del curr_pop
 
-                converted += 1
+                #print("popsize:", self.pop_size)
+                #print("conv:", self.capacities.farming.worked)
+                converted += batch_size
             else:
                 break
+        end_time = time.time()
+        #print("Conv:", end_time - start_time)
 
     def update_production(self):
         """

@@ -13,34 +13,34 @@ TERRAIN_TYPES = [
     TerrainType(
         "coast",
         0,
-        800,
+        8000,
         0
     ),
     TerrainType(
         "plains",
-        1000,
+        10000,
         0,
         0
     ),
     TerrainType(
         "highlands",
-        800,
+        8000,
         0,
-        300
+        3000
     ),
     TerrainType(
         "low_mountains",
-        600,
+        6000,
         0,
-        500
+        5000
     ),
     TerrainType(
         "high_mountains",
-        400,
+        4000,
         0,
-        600
+        6000
     ),
 ]
 
-RIVER_BONUS_FISHING = 200
+RIVER_BONUS_FISHING = 2000
 RIVER_BONUS_FARMING = 1.2

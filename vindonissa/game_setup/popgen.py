@@ -28,7 +28,7 @@ def set_initial_capacities(city: City):
     city.capacities.farming.maximum = city.capacities.farming.maximum / len(city.terrain) # type: ignore
     city.capacities.fishing.maximum = city.capacities.fishing.maximum / len(city.terrain) # type: ignore
     city.capacities.mining.maximum = city.capacities.mining.maximum / len(city.terrain) # type: ignore
-
+    city.capacities.artisan.maximum = 9999999
 
 def set_initial_pops(city: City, max_routes: int):
     assert city.culture is not None
@@ -53,10 +53,15 @@ def set_initial_pops(city: City, max_routes: int):
     total_values = sum(culture_counter.values())
 
     for culture, value in culture_counter.items():
-        bonus = 0.4 if culture == city.culture else 0
-        share = (value / total_values) * 0.6 + bonus
-        pop = Pop(culture, round(city.capacities.food_maximum * pop_density * share))
-        city.pops.append(pop)
+        # we calculate urbanization separate for each culture as some might later tend more to it.
+        # for the moment, only the proto trade routes decide urbanization
+        initial_urbanization = 0.03 + 0.03 * (float(city.cell.route_counter) / float(max_routes))
+
+        for is_urban, demo_share in [(True, initial_urbanization), (False, 1-initial_urbanization)]:
+            bonus = 0.4 if culture == city.culture else 0
+            share = (value / total_values) * 0.6 + bonus
+            pop = Pop(culture, round(city.capacities.food_maximum * pop_density * share * demo_share), is_urban=is_urban)
+            city.pops.append(pop)
 
 
 def generate(map: WorldMap):

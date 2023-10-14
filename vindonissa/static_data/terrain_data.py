@@ -26,19 +26,19 @@ TERRAIN_TYPES = [
         "highlands",
         8000,
         0,
-        3000
+        1500
     ),
     TerrainType(
         "low_mountains",
         6000,
         0,
-        5000
+        2500
     ),
     TerrainType(
         "high_mountains",
         4000,
         0,
-        6000
+        3000
     ),
 ]
 

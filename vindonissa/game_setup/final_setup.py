@@ -7,6 +7,7 @@ import time
 from vindonissa.game_objects.map import WorldMap
 from vindonissa.game_objects.city import City, Port, WayNode
 from vindonissa.static_data.movement_costs import traderoute_cost
+from vindonissa.static_data.gamemetrics import TRADE_VALUE_TO_CAPACITY_RATE
 
 def initialize_cities(map: WorldMap):
     """
@@ -69,7 +70,7 @@ def assign_best_routes(map: WorldMap):
     create_traderoutes_new(map)
 
     for city in map.cities:
-        city.capacities.set_new_capacity_maximum(city.capacities.trade, round(city.traderoute_wealth * 0.03))
+        city.capacities.set_new_capacity_maximum(city.capacities.trade, round(city.traderoute_wealth * TRADE_VALUE_TO_CAPACITY_RATE))
 
     for city in map.cities:
         #print("ASSIGN")
@@ -136,11 +137,11 @@ def create_traderoutes_new(map: WorldMap):
                 prev_city = route[l]
                 if type(prev_city) == Port:
                     if prev_city.city not in route:
-                        total_trade_wealth += prev_city.city.wealth
+                        total_trade_wealth += prev_city.city.wealth_no_trade
                     else:
                         iterations -= 1
                 elif type(prev_city) == City:
-                    total_trade_wealth += prev_city.wealth
+                    total_trade_wealth += prev_city.wealth_no_trade
                 l -= 1
                 iterations += 1
             # iterate following cities
@@ -152,13 +153,14 @@ def create_traderoutes_new(map: WorldMap):
                 next_city = route[l]
                 if type(next_city) == Port:
                     if next_city.city not in route:
-                        total_trade_wealth += next_city.city.wealth
+                        total_trade_wealth += next_city.city.wealth_no_trade
                     else:
                         l += 1
                 elif type(next_city) == City:
-                    total_trade_wealth += next_city.wealth
+                    total_trade_wealth += next_city.wealth_no_trade
                 l += 1
                 iterations += 1
+
             if type(city) == Port:
                 if city.city not in route:
                     city.city.traderoute_counter += 1

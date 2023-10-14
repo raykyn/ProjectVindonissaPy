@@ -178,7 +178,7 @@ class WorldMap(object):
         apply_wealth_modifier: Modifies distance by relative city wealth.
         """
         if apply_wealth_modifier:
-            average_wealth = sum([c.wealth for c in self.cities]) / len(self.cities)
+            average_wealth = sum([c.wealth_no_trade for c in self.cities]) / len(self.cities)
             half_avg_wealth = average_wealth * 0.5
             double_avg_wealth = average_wealth * 2
             z = double_avg_wealth - half_avg_wealth
@@ -223,10 +223,10 @@ class WorldMap(object):
                 if apply_wealth_modifier:
                     assert type(source) == City
                     if type(neighbor) == City:
-                        w = neighbor.wealth
+                        w = neighbor.wealth_no_trade
                         t = neighbor.traderoute_counter
                     elif type(neighbor) == Port:
-                        w = neighbor.city.wealth
+                        w = neighbor.city.wealth_no_trade
                         t = neighbor.city.traderoute_counter
                     else:
                         w = 0

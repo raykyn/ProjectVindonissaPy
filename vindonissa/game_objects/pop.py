@@ -14,13 +14,13 @@ class Work (enum.Enum):
     Mining = 3
     Forestry = 4
     Trade = 5
-
+    Artisan = 6
 
 class Pop (object):
     """
     Base class for all pop types.
     """
-    def __init__(self, culture, size: int, work: Work = Work.Unassigned):
+    def __init__(self, culture, size: int, work: Work = Work.Unassigned, is_urban: bool = False):
         # identifiers
         self.culture: Culture = culture
 
@@ -29,6 +29,7 @@ class Pop (object):
 
         # work
         self.work: Work = work
+        self.is_urban: bool = is_urban
 
     def __str__(self) -> str:
         return f"Pop of Culture {self.culture} and size {self.size}, working {self.work.name}"  # type: ignore

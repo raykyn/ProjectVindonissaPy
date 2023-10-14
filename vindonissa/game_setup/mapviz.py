@@ -270,8 +270,19 @@ def draw_map(map: WorldMap):
     for city in sorted(map.cities, key=lambda x: x.wealth):
         #print(city.capacities.trade.maximum, city.capacities.trade.worked, city.capacities.trade.production, city.wealth, city.pop_size)
         #if city.traderoute_counter > 0:
+        print("="*80)
+        print("Population:", city.pop_size)
+        print("Wealth:", city.wealth)
+        print("Traderoute Count:", city.traderoute_counter)
+        print("Traderoute Value:", city.traderoute_wealth)
+        print("Food Surplus:", city.capacities.food_production - city.pop_size)
+        for cap in city.capacities.capacities:
+            print("-"*80)
+            print(cap.work_type)
+            print("Workers:", cap.worked)
+            print("Production:", cap.production)
         drawPoint(screen, (city.cell.x, city.cell.y), GRIDSIZE, RED, round(city.wealth * 0.005))
-        drawPoint(screen, (city.cell.x, city.cell.y), GRIDSIZE, BLACK, round(city.capacities.trade.production * 0.005))
+        drawPoint(screen, (city.cell.x, city.cell.y), GRIDSIZE, BLACK, round(city.capacities.artisan.production * 0.005))
        
     #pygame.draw.lines(screen, BLACK, False, [(r.cell.x*GRIDSIZE, r.cell.y*GRIDSIZE) for r in best_route[0]])
     #drawPoint(screen, (map.cities[595].cell.x, map.cities[595].cell.y), GRIDSIZE, GREEN)

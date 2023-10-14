@@ -7,7 +7,7 @@ import time
 from typing import Dict, List
 from vindonissa.game_objects.laws import CityLaws
 from vindonissa.game_objects.title import CityTitle
-from vindonissa.static_data.gamemetrics import POP_CONVERSION_MAX, FOOD_PRODUCTION_BASE, FOOD_PRODUCTION_MOD, MINING_PRODUCTION, TRADE_PRODUCTION, FORESTRY_PRODUCTION
+from vindonissa.static_data.gamemetrics import POP_CONVERSION_MAX, FOOD_PRODUCTION_BASE, FOOD_PRODUCTION_MOD, MINING_PRODUCTION, TRADE_PRODUCTION, FORESTRY_PRODUCTION, ARTISAN_PRODUCTION
 from vindonissa.game_objects.pop import Work
 
 from typing import TYPE_CHECKING
@@ -93,8 +93,9 @@ class Capacities(object):
         self.mining = Capacity(Work.Mining)
         self.forestry = Capacity(Work.Forestry)
         self.trade = Capacity(Work.Trade)
+        self.artisan = Capacity(Work.Artisan)
 
-        self.capacities = [self.farming, self.fishing, self.mining, self.forestry, self.trade]
+        self.capacities = [self.farming, self.fishing, self.mining, self.forestry, self.trade, self.artisan]
 
     @property
     def food_maximum(self):
@@ -106,7 +107,12 @@ class Capacities(object):
     
     @property
     def wealth_production(self):
-        return self.mining.production + self.forestry.production + self.trade.production
+        return self.mining.production + self.forestry.production + self.trade.production + self.artisan.production
+
+    @property
+    def wealth_production_no_trade(self):
+        # NOTE: Maybe rename to trade_value or something like that?
+        return self.mining.production + self.forestry.production + self.artisan.production
 
     def get_exp_value_when_raised(self, cap: Capacity) -> float:
         """
@@ -179,6 +185,7 @@ class Capacities(object):
         self.mining.base_production = MINING_PRODUCTION  # modify by ore quality?
         self.forestry.base_production = FORESTRY_PRODUCTION  # modify by something?
         self.trade.base_production = TRADE_PRODUCTION
+        self.artisan.base_production = ARTISAN_PRODUCTION
 
 
 class City(WayNode):
@@ -227,9 +234,25 @@ class City(WayNode):
         food_diff = self.capacities.food_production - self.pop_size
         if food_diff >= 0:
             # enough food, surplus food is converted into wealth at a 2:1 rate
-            return food_diff * 0.5 + self.capacities.wealth_production
+            # TODO: If a city is in negative wealth, it's starving!
+            return max(food_diff * 0.5 + self.capacities.wealth_production, 0)
         else:
-            return self.capacities.wealth_production + food_diff * 2 
+            return max(self.capacities.wealth_production + food_diff * 2, 0)
+        
+    @property
+    def wealth_no_trade(self):
+        """
+        Returns the wealth just without the trade wealth included.
+        This is so trade wealth doesn't increase itself cirularly.
+        """
+        food_diff = self.capacities.food_production - self.pop_size
+        if food_diff >= 0:
+            # enough food, surplus food is converted into wealth at a 2:1 rate
+            # TODO: If a city is in negative wealth, it's starving!
+            return max(food_diff * 0.5 + self.capacities.wealth_production_no_trade, 0)
+        else:
+            return max(self.capacities.wealth_production_no_trade + food_diff * 2, 0)
+
 
     @cached_property
     def fertility(self):
@@ -267,38 +290,30 @@ class City(WayNode):
         """
         self.update_pop_assignments()
         self.update_production()
-    
-    def update_pop_assignments(self, disable_cap=False, start_batch_size=256):
-        """
-        Update which capacities are worked by pops.
 
-        For the moment, we only allocate new pops, later we need to do reallocation as well.
+    def _update_pop_assignments(self, disable_cap=False, start_batch_size=256, urban=False):
 
-        We convert pops in batches which we then make smaller if no full batches can be converted.
-        """
-        start_time = time.time()
+        if urban:
+            caps = [self.capacities.trade, self.capacities.artisan]
+        else:
+            caps = [self.capacities.farming, self.capacities.fishing,
+                    self.capacities.mining, self.capacities.forestry]
+
         pop_conversion_pool = POP_CONVERSION_MAX * self.pop_size
         if disable_cap:
             pop_conversion_pool = 100000
-        end_time = time.time()
-        #print("set conv pool:", end_time-start_time)
 
-        start_time = time.time()
-        unassigned_pops = [pop for pop in self.pops if pop.work == Work.Unassigned]
-        end_time = time.time()
-        #print("choose unass:", end_time-start_time)
+        unassigned_pops = [pop for pop in self.pops if pop.work == Work.Unassigned and pop.is_urban == urban]
 
         converted = 0
-        
-        start_time = time.time()
-        # print("="*80)
+
         while unassigned_pops and converted < pop_conversion_pool:
             curr_pop = unassigned_pops[0]
             batch_size = start_batch_size
             if curr_pop.size < batch_size:
                 batch_size = curr_pop.size
             # get the highest prio capacity
-            sorted_caps = sorted([cap for cap in self.capacities.capacities if cap.worked < cap.maximum * 2], key=lambda x: (self.capacities.get_exp_value_when_raised(x), -(x.worked/max(x.maximum, 1))), reverse=True)
+            sorted_caps = sorted([cap for cap in caps if cap.worked < cap.maximum * 2], key=lambda x: (self.capacities.get_exp_value_when_raised(x), -(x.worked/max(x.maximum, 1))), reverse=True)
             highest_prio_cap = sorted_caps[0]
 
             # Add worker
@@ -329,15 +344,12 @@ class City(WayNode):
             #print("popsize:", self.pop_size)
             #print(self.capacities.farming.worked)
             converted += batch_size
-        end_time = time.time()
-        #print("Unass:", end_time - start_time)
 
-        start_time = time.time()
         curr_start_batch_size = start_batch_size
         conv_cap_types = []
         while converted < pop_conversion_pool and curr_start_batch_size >= 1:
-            add_exp_cap_values = sorted([cap for cap in self.capacities.capacities if cap.worked < cap.maximum * 2], key=lambda x: (self.capacities.get_exp_value_when_raised(x), -(x.worked/max(x.maximum, 1))), reverse=True)
-            red_exp_cap_values = sorted([c for c in self.capacities.capacities if c.worked > 0], key=lambda x: (self.capacities.get_curr_value(x), -(x.worked/max(x.maximum, 1))), reverse=True)
+            add_exp_cap_values = sorted([cap for cap in caps if cap.worked < cap.maximum * 2], key=lambda x: (self.capacities.get_exp_value_when_raised(x), -(x.worked/max(x.maximum, 1))), reverse=True)
+            red_exp_cap_values = sorted([c for c in caps if c.worked > 0], key=lambda x: (self.capacities.get_curr_value(x), -(x.worked/max(x.maximum, 1))), reverse=True)
 
             highest_prio_cap_to_raise = add_exp_cap_values[0]
             highest_prio_cap_to_lower = red_exp_cap_values[-1]
@@ -386,8 +398,19 @@ class City(WayNode):
                 converted += batch_size
             else:
                 break
-        end_time = time.time()
-        #print("Conv:", end_time - start_time)
+        
+    
+    def update_pop_assignments(self, disable_cap=False, start_batch_size=256):
+        """
+        Update which capacities are worked by pops.
+
+        For the moment, we only allocate new pops, later we need to do reallocation as well.
+
+        We convert pops in batches which we then make smaller if no full batches can be converted.
+        """
+        self._update_pop_assignments(disable_cap=disable_cap, start_batch_size=start_batch_size, urban=False)
+        self._update_pop_assignments(disable_cap=disable_cap, start_batch_size=round(start_batch_size / 8), urban=True)
+        
 
     def update_production(self):
         """

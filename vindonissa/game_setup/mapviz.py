@@ -110,10 +110,16 @@ def drawCellColors(screen, gridsize, triangles, numEdges, centers, delaunay, ele
             pygame.draw.polygon(screen, heightColor(elevation[r]), coordinates)
 
 
-def drawCellColors2(screen, gridsize, cells):
+def colorByOreDensity(cell: Cell):
+    if cell.is_water:
+        return SEA
+    return grayscale(cell.ore_density)
+
+
+def drawCellColors2(screen, gridsize, cells, func):
     for cell in cells:
         #pygame.draw.polygon(screen, heightColorByCell(cell), [(x * gridsize, y * gridsize) for x, y in cell.coords])
-        pygame.draw.polygon(screen, heightColorByCategory(cell), [(x * gridsize, y * gridsize) for x, y in cell.coords])  # type: ignore
+        pygame.draw.polygon(screen, func(cell), [(x * gridsize, y * gridsize) for x, y in cell.coords])  # type: ignore
 
 
 def drawPoints(canvas, points):
@@ -228,7 +234,8 @@ def draw_map(map: WorldMap):
     clock = pygame.time.Clock()
 
     screen.fill(WHITE)
-    drawCellColors2(screen, GRIDSIZE, map.cells)
+    #drawCellColors2(screen, GRIDSIZE, map.cells, heightColorByCategory)
+    drawCellColors2(screen, GRIDSIZE, map.cells, colorByOreDensity)
     drawTrees(screen, map.cells)
     for road in map.roads:
         pygame.draw.lines(screen, ROAD, False, [(cell.x*GRIDSIZE, cell.y*GRIDSIZE) for cell in road])
@@ -281,8 +288,8 @@ def draw_map(map: WorldMap):
             print(cap.work_type)
             print("Workers:", cap.worked)
             print("Production:", cap.production)
-        drawPoint(screen, (city.cell.x, city.cell.y), GRIDSIZE, RED, round(city.wealth * 0.005))
-        drawPoint(screen, (city.cell.x, city.cell.y), GRIDSIZE, BLACK, round(city.capacities.artisan.production * 0.005))
+        drawPoint(screen, (city.cell.x, city.cell.y), GRIDSIZE, RED, round(city.wealth * 0.01))
+        drawPoint(screen, (city.cell.x, city.cell.y), GRIDSIZE, BLACK, round(city.capacities.mining.production * 0.01))
        
     #pygame.draw.lines(screen, BLACK, False, [(r.cell.x*GRIDSIZE, r.cell.y*GRIDSIZE) for r in best_route[0]])
     #drawPoint(screen, (map.cities[595].cell.x, map.cities[595].cell.y), GRIDSIZE, GREEN)

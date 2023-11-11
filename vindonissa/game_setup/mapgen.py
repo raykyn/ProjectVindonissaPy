@@ -102,24 +102,30 @@ def assignOreDensity(points, numregions, width, height, wavelength, elevation, t
 
     freq1 = 2
     freq2 = freq1 * 2
-    freq3 = freq2 * 2
+    freq3 = freq2 * 8
 
     orelevel = []
     for r in range(numregions):
         nx = points[r][0] / width - 0.5
         ny = points[r][1] / height - 0.5
-        sample = ((1 * noise.noise2d(freq1 * nx / wavelength, freq1 * ny / wavelength) + 
-                    1 * noise2.noise2d(freq2 * nx / wavelength, freq2 * ny / wavelength) +
-                    1 * noise3.noise2d(freq3 * nx / wavelength, freq3 * ny / wavelength)) / 3)
+
+        sample1 = noise.noise2d(freq1 * nx / wavelength, freq1 * ny / wavelength)
+        sample2 = noise2.noise2d(freq2 * nx / wavelength, freq2 * ny / wavelength)
+        sample3 = 0.9 if noise3.noise2d(freq3 * nx / wavelength, freq3 * ny / wavelength) > 0.6 else -0.9
+        sample = (sample1 + sample2 + sample3) / 3
+        #sample = (sample1 + sample2) / 2
+        #sample = sample3
         
         # shape from -1 to 1 to 0 to 1
         sample += 1
         sample /= 2
 
-        sample -= elevation_average * 0.5
+        sample -= elevation_average
         
         # modify by elevation and waterlevel
-        sample = sample + (elevation[r] * 0.5)
+        sample = sample + (elevation[r])
+
+        #sample = 0.9 if sample > 0.8 else 0.1
         
         orelevel.append(sample)
     

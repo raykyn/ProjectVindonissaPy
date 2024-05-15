@@ -4,6 +4,7 @@ from typing import List
 import random
 
 from vindonissa.events.eventsystem import EventSystem, Event
+from vindonissa.events.character_events import register_yearly_events
 from vindonissa.game_objects.family import Family
 from vindonissa.game_objects.culture import Culture
 from vindonissa.game_objects.title import CityTitle
@@ -26,11 +27,13 @@ class Character(object):
             self.birthday = birthday
         self.birthday_event = Event(self.age_func)
         EventSystem.queue_yearly_event(self.birthday_event, self.birthday)
+        self.yearly_events = Event(register_yearly_events, self)
+        EventSystem.queue_yearly_event(self.yearly_events, self.birthday)
 
         # family relations
-        self.spouse: Character
-        self.father: Character
-        self.mother: Character
+        self.spouse: Character = None  # type: ignore
+        self.father: Character = None  # type: ignore
+        self.mother: Character = None  # type: ignore
         self.children: List[Character] = []
 
         # further relations
@@ -54,10 +57,12 @@ class Character(object):
         """
         Called when a character dies.
         NOTE: Remember to dequeue all regularly happening events for this character.
+        NOTE: Remove character as spouse.
         TODO: Trigger inheritance mechanics.
         """
         self.__is_alive = False
         EventSystem.dequeue_yearly_event(self.birthday_event, self.birthday)
+        EventSystem.dequeue_yearly_event(self.yearly_events, self.birthday)
 
     @property
     def holdings(self):
@@ -81,6 +86,10 @@ class Character(object):
         Could be made more efficient by simply holding this as a variable.
         """
         return self.age < 16
+    
+    @property
+    def is_married(self):
+        return True if self.spouse is not None else False
     
     @property
     def siblings(self):

@@ -53,6 +53,7 @@ class Calendar(object):
             self.year += 1
         
         EventSystem.execute_yearly_events(self.yearday-1)
+        EventSystem.pop_events()
 
     @property
     def datestring(self):
